@@ -147,6 +147,68 @@ tr:hover td { background: rgba(255,255,255,0.03); }
 
 .td-actions { display: flex; gap: 8px; }
 
+/* ------------- MOBILE RESPONSIVENESS ------------- */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    .glass-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .half {
+        width: 100%;
+    }
+    
+    /* Chuyển Bảng thành Thẻ (Card) trên Mobile */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    thead {
+        display: none; /* Ẩn tiêu đề ngang */
+    }
+    tr {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+    }
+    td {
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        padding: 0.8rem 0;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.5px;
+    }
+    td:last-child {
+        border-bottom: none;
+        padding-top: 1rem;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.5rem;
+    }
+    .td-actions::before {
+        display: none;
+    }
+}
+
 /* ------------- PRINT STYLES ------------- */
 .print-area { display: none; }
 

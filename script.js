@@ -32,20 +32,20 @@ async function loadData() {
         arr.forEach(item => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${new Date(item.createdAt).toLocaleDateString('vi-VN')}<br><small style="color:#94a3b8">${new Date(item.createdAt).toLocaleTimeString('vi-VN')}</small></td>
-                <td><strong>${item.nguoiXin}</strong></td>
-                <td>${item.nguoiDoi}</td>
-                <td>
-                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; margin-bottom:4px">
+                <td data-label="Lập Đơn Lúc">${new Date(item.createdAt).toLocaleDateString('vi-VN')} <small style="color:#94a3b8">${new Date(item.createdAt).toLocaleTimeString('vi-VN')}</small></td>
+                <td data-label="Bạn Xin Đổi"><strong style="font-size:1.1rem">${item.nguoiXin}</strong></td>
+                <td data-label="Trực Thay Bạn"><strong style="font-size:1.1rem; color:#e2e8f0">${item.nguoiDoi}</strong></td>
+                <td data-label="Thông Tin Ca Trực">
+                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; margin-bottom:4px; width: 100%;">
                         <small style="color:#ef4444">Để lại ca:</small> <span style="font-weight:600; color:#e2e8f0">${item.caDi}</span>
                     </div>
-                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px">
+                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width: 100%;">
                         <small style="color:#22c55e">Nhận về ca:</small> <span style="font-weight:600; color:#e2e8f0">${item.caVe}</span>
                     </div>
                 </td>
-                <td class="td-actions">
-                    <button class="btn btn-secondary btn-sm" onclick="exportWordOldRecord('${item.id}')" title="Tải File Word Bản Này">📄 Tải Word</button>
-                    <button class="btn btn-sm" style="background:#ef4444;color:white" onclick="deleteRecord('${item.id}')" title="Xóa">🗑️</button>
+                <td class="td-actions" style="display:flex; width:100%">
+                    <button class="btn btn-secondary btn-sm" onclick="exportWordOldRecord('${item.id}')" title="Tải File Word Bản Này" style="flex:1">📄 Tải Word Về Zalo</button>
+                    <button class="btn btn-sm" style="background:#ef4444;color:white; width: 44px; display:flex; align-items:center; justify-content:center;" onclick="deleteRecord('${item.id}')" title="Xóa">🗑️</button>
                 </td>
             `;
             tbody.appendChild(tr);
