@@ -1,33 +1,34 @@
-// 1. Đồng hồ thời gian thực
+// =============================================
+// 1. ĐỒNG HỒ THỜI GIAN THỰC
+// =============================================
 function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('vi-VN');
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString('vi-VN');
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// 2. URL tới Database Đám mây Firebase
+// =============================================
+// 2. FIREBASE URL
+// =============================================
 const API_URL = 'https://phan-d-default-rtdb.asia-southeast1.firebasedatabase.app/don_doi_ca';
 window.allRecords = [];
 
-// 3. Tải Dữ liệu từ Server và hiển thị vào Table
+// =============================================
+// 3. TẢI DỮ LIỆU TỪ SERVER
+// =============================================
 async function loadData() {
     try {
         const res = await fetch(`${API_URL}.json`);
         const data = await res.json();
-        
         let arr = [];
         if (data && typeof data === 'object') {
-            for (let key in data) {
-                arr.push({ id: key, ...data[key] });
-            }
+            for (let key in data) arr.push({ id: key, ...data[key] });
         }
         arr.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         window.allRecords = arr;
 
         const tbody = document.getElementById('dataBody');
         tbody.innerHTML = '';
-        
         arr.forEach(item => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -35,374 +36,316 @@ async function loadData() {
                 <td data-label="Bạn Xin Đổi"><strong style="font-size:1.1rem">${item.nguoiXin}</strong></td>
                 <td data-label="Trực Thay Bạn"><strong style="font-size:1.1rem; color:#e2e8f0">${item.nguoiDoi}</strong></td>
                 <td data-label="Thông Tin Ca Trực">
-                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; margin-bottom:4px; width: 100%;">
+                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; margin-bottom:4px; width:100%;">
                         <small style="color:#ef4444">Để lại ca:</small> <span style="font-weight:600; color:#e2e8f0">${item.caDi}</span>
                     </div>
-                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width: 100%;">
+                    <div style="background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width:100%;">
                         <small style="color:#22c55e">Nhận về ca:</small> <span style="font-weight:600; color:#e2e8f0">${item.caVe}</span>
                     </div>
                 </td>
                 <td class="td-actions" style="display:flex; width:100%">
-                    <button class="btn btn-secondary btn-sm" onclick="exportWordOldRecord('${item.id}')" title="Tải File Word Bản Này" style="flex:1">📄 Tải Word Về Zalo</button>
-                    <button class="btn btn-sm" style="background:#ef4444;color:white; width: 44px; display:flex; align-items:center; justify-content:center;" onclick="deleteRecord('${item.id}')" title="Xóa">🗑️</button>
-                </td>
-            `;
+                    <button class="btn btn-secondary btn-sm" onclick="exportWordOldRecord('${item.id}')" style="flex:1">📄 Tải Word Về Zalo</button>
+                    <button class="btn btn-sm" style="background:#ef4444;color:white;width:44px;display:flex;align-items:center;justify-content:center;" onclick="deleteRecord('${item.id}')">🗑️</button>
+                </td>`;
             tbody.appendChild(tr);
         });
     } catch (e) {
-        console.error('Lỗi kết nối Firebase', e);
-        document.getElementById('dataBody').innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ef4444">Lỗi kết nối Máy chủ Đám mây! Vui lòng kiểm tra quyền.</td></tr>`;
+        document.getElementById('dataBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:#ef4444">Lỗi kết nối Máy chủ Đám mây!</td></tr>';
     }
 }
 
-// 4. Đồng bộ dữ liệu Nhập ở Form sang Khung In (Print Area)
+// =============================================
+// 4. ĐỒNG BỘ FORM → KHUNG IN
+// =============================================
 function bindPrintData() {
-    const defaultDotNames = '........................................................................';
-    const defaultDotCa = '.................................................';
-    
-    const nguoi_xin = document.getElementById('inp_nguoi_xin').value || defaultDotNames;
-    const nguoi_doi = document.getElementById('inp_nguoi_doi').value || defaultDotNames;
-    
-    document.getElementById('p_nguoi_xin').textContent = nguoi_xin;
-    document.getElementById('p_nguoi_doi').textContent = nguoi_doi;
-    document.getElementById('p_nguoi_doi_2').textContent = nguoi_doi;
-    document.getElementById('p_nguoi_doi_3').textContent = nguoi_doi;
-    
-    let strCaDi = document.getElementById('sel_ca_di').value && document.getElementById('date_di').value 
-        ? `${document.getElementById('sel_ca_di').value} ngày ${window.formatDateVN(document.getElementById('date_di').value)}` : '';
-    let strCaVe = document.getElementById('sel_ca_ve').value && document.getElementById('date_ve').value 
-        ? `${document.getElementById('sel_ca_ve').value} ngày ${window.formatDateVN(document.getElementById('date_ve').value)}` : '';
-        
-    document.getElementById('p_ca_1').textContent = strCaDi || defaultDotCa;
-    document.getElementById('p_ca_2').textContent = strCaVe || defaultDotCa;
+    var dots = '................................................................';
+    var dotsCa = '.................................................';
+    var nguoiXin = document.getElementById('inp_nguoi_xin').value || dots;
+    var nguoiDoi = document.getElementById('inp_nguoi_doi').value || dots;
+
+    document.getElementById('p_nguoi_xin').textContent = nguoiXin;
+    ['p_nguoi_doi','p_nguoi_doi_2','p_nguoi_doi_3'].forEach(function(id) {
+        document.getElementById(id).textContent = nguoiDoi;
+    });
+
+    var caDiVal   = document.getElementById('sel_ca_di').value;
+    var dateDiVal = document.getElementById('date_di').value;
+    var caVeVal   = document.getElementById('sel_ca_ve').value;
+    var dateVeVal = document.getElementById('date_ve').value;
+
+    document.getElementById('p_ca_1').textContent = (caDiVal && dateDiVal) ? caDiVal + ' ngày ' + formatDateVN(dateDiVal) : dotsCa;
+    document.getElementById('p_ca_2').textContent = (caVeVal && dateVeVal) ? caVeVal + ' ngày ' + formatDateVN(dateVeVal) : dotsCa;
     document.getElementById('p_so_lan').textContent = document.getElementById('inp_so_lan').value || '......';
-    document.getElementById('p_ly_do').textContent = document.getElementById('inp_ly_do').value || '....................................................................................................................................';
-    
-    document.getElementById('p_nguoi_xin_ky').textContent = document.getElementById('inp_nguoi_xin').value ? window.toTitleCase(document.getElementById('inp_nguoi_xin').value) : '............................';
-    document.getElementById('p_nguoi_doi_ky').textContent = document.getElementById('inp_nguoi_doi').value ? window.toTitleCase(document.getElementById('inp_nguoi_doi').value) : '............................';
-    
-    const now = new Date();
-    document.getElementById('p_ngay').textContent = now.getDate().toString().padStart(2, '0');
-    document.getElementById('p_thang').textContent = (now.getMonth() + 1).toString().padStart(2, '0');
-    document.getElementById('p_nam').textContent = now.getFullYear();
+    document.getElementById('p_ly_do').textContent  = document.getElementById('inp_ly_do').value  || '....';
+
+    document.getElementById('p_nguoi_xin_ky').textContent = document.getElementById('inp_nguoi_xin').value ? toTitleCase(document.getElementById('inp_nguoi_xin').value) : '............................';
+    document.getElementById('p_nguoi_doi_ky').textContent = document.getElementById('inp_nguoi_doi').value ? toTitleCase(document.getElementById('inp_nguoi_doi').value) : '............................';
+
+    var now = new Date();
+    document.getElementById('p_ngay').textContent  = now.getDate().toString().padStart(2,'0');
+    document.getElementById('p_thang').textContent = (now.getMonth()+1).toString().padStart(2,'0');
+    document.getElementById('p_nam').textContent   = now.getFullYear();
 }
 
-window.formatDateVN = function(dateStr) {
-    if (!dateStr) return "";
-    const parts = dateStr.split('-');
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+function formatDateVN(dateStr) {
+    if (!dateStr) return '';
+    var p = dateStr.split('-');
+    return p[2] + '/' + p[1] + '/' + p[0];
 }
+window.formatDateVN = formatDateVN;
 
-window.toTitleCase = function(str) {
-  return str.toLowerCase().split(' ').map(function(word) {
-    return (word.charAt(0).toUpperCase() + word.slice(1));
-  }).join(' ');
+function toTitleCase(str) {
+    return str.toLowerCase().split(' ').map(function(w) {
+        return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(' ');
 }
+window.toTitleCase = toTitleCase;
 
-document.querySelectorAll('input, select, textarea').forEach(el => {
+document.querySelectorAll('input, select, textarea').forEach(function(el) {
     el.addEventListener('input', bindPrintData);
     el.addEventListener('change', bindPrintData);
 });
 
-// 5. Tải file Word trực tiếp từ form
-document.getElementById('btnPrintPreview').addEventListener('click', () => {
+// =============================================
+// 5. NÚT TẢI WORD TỪ FORM
+// =============================================
+document.getElementById('btnPrintPreview').addEventListener('click', function() {
     bindPrintData();
-    const data = collectFormData();
-    let tenNguoi = window.toTitleCase(document.getElementById('inp_nguoi_xin').value || "Moi");
-    buildAndDownloadDocx(data, 'Don_Doi_Ca_' + tenNguoi.replace(/ /g, '_'));
+    var now = new Date();
+    exportDocx({
+        nguoiXin : document.getElementById('inp_nguoi_xin').value || '................................................................',
+        nguoiDoi : document.getElementById('inp_nguoi_doi').value || '................................................................',
+        caDi     : document.getElementById('p_ca_1').textContent,
+        caVe     : document.getElementById('p_ca_2').textContent,
+        soLan    : document.getElementById('inp_so_lan').value || '......',
+        lyDo     : document.getElementById('inp_ly_do').value  || '....',
+        ngay     : now.getDate().toString().padStart(2,'0'),
+        thang    : (now.getMonth()+1).toString().padStart(2,'0'),
+        nam      : now.getFullYear().toString()
+    }, 'Don_Doi_Ca_' + toTitleCase(document.getElementById('inp_nguoi_xin').value || 'Moi').replace(/ /g,'_'));
 });
 
-// Thu thập dữ liệu hiện tại từ form
-function collectFormData() {
-    const now = new Date();
-    return {
-        nguoiXin: document.getElementById('inp_nguoi_xin').value || '................................................................',
-        nguoiDoi: document.getElementById('inp_nguoi_doi').value || '................................................................',
-        caDi: document.getElementById('p_ca_1').textContent,
-        caVe: document.getElementById('p_ca_2').textContent,
-        soLan: document.getElementById('inp_so_lan').value || '......',
-        lyDo: document.getElementById('inp_ly_do').value || '....',
-        ngay: now.getDate().toString().padStart(2, '0'),
-        thang: (now.getMonth() + 1).toString().padStart(2, '0'),
-        nam: now.getFullYear().toString(),
-    };
-}
-
-// =========================================================
-// HÀM TẠO FILE .DOCX CHUẨN OOXML — KHÔNG DÙNG html-docx-js
-// Dùng thư viện docx.js (CDN) để tạo file Word thật sự
-// =========================================================
-async function buildAndDownloadDocx(d, filename) {
-    // Đảm bảo thư viện docx đã load
-    if (typeof docx === 'undefined') {
-        alert('Thư viện tạo Word chưa tải xong. Vui lòng thử lại sau vài giây!');
-        return;
-    }
-
-    const {
-        Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-        AlignmentType, WidthType, BorderStyle, VerticalAlign
-    } = docx;
-
-    const fontName = 'Times New Roman';
-    const fontSize = 28; // 14pt = 28 half-points
-
-    // Helper: tạo đoạn văn thụt đầu dòng, justify
-    function para(children, opts = {}) {
-        return new Paragraph({
-            children,
-            alignment: opts.align || AlignmentType.JUSTIFIED,
-            indent: opts.indent ? { firstLine: 567 } : undefined, // ~1cm
-            spacing: { after: 80 },
-        });
-    }
-
-    // Helper: tạo TextRun font chung
-    function run(text, opts = {}) {
-        return new TextRun({
-            text,
-            font: fontName,
-            size: opts.size || fontSize,
-            bold: opts.bold || false,
-            italics: opts.italic || false,
-            underline: opts.underline ? {} : undefined,
-        });
-    }
-
-    // Đường viền vô hình cho bảng ký tên
-    const noBorder = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
-    const noBorders = { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder };
-
-    // Bảng 3 ô chữ ký
-    const sigTable = new Table({
-        width: { size: 9026, type: WidthType.DXA },
-        columnWidths: [3008, 3010, 3008],
-        borders: { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder, insideH: noBorder, insideV: noBorder },
-        rows: [
-            // Hàng 1: tiêu đề 3 cột
-            new TableRow({
-                children: [
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3008, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run('Người đổi', { bold: true })] })],
-                    }),
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3010, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run('Người viết đơn', { bold: true })] })],
-                    }),
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3008, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run('Đội trưởng', { bold: true })] })],
-                    }),
-                ]
-            }),
-            // Hàng 2: khoảng trắng ký tên (4 dòng trống)
-            ...[1,2,3,4].map(() => new TableRow({
-                children: [
-                    new TableCell({ borders: noBorders, width: { size: 3008, type: WidthType.DXA }, children: [new Paragraph({ children: [run('')] })] }),
-                    new TableCell({ borders: noBorders, width: { size: 3010, type: WidthType.DXA }, children: [new Paragraph({ children: [run('')] })] }),
-                    new TableCell({ borders: noBorders, width: { size: 3008, type: WidthType.DXA }, children: [new Paragraph({ children: [run('')] })] }),
-                ]
-            })),
-            // Hàng 3: tên người ký
-            new TableRow({
-                children: [
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3008, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run(window.toTitleCase(d.nguoiDoi), { bold: true })] })],
-                    }),
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3010, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run(window.toTitleCase(d.nguoiXin), { bold: true })] })],
-                    }),
-                    new TableCell({
-                        borders: noBorders,
-                        width: { size: 3008, type: WidthType.DXA },
-                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run('Nguyễn Văn Trung', { bold: true })] })],
-                    }),
-                ]
-            }),
-        ]
-    });
-
-    const doc = new Document({
-        sections: [{
-            properties: {
-                page: {
-                    size: { width: 11906, height: 16838 }, // A4
-                    margin: { top: 1134, right: 850, bottom: 1134, left: 1701 } // trên/dưới 2cm, trái 3cm, phải 1.5cm
-                }
-            },
-            children: [
-                // QUỐC HIỆU
-                para([run('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', { bold: true, size: 28 })], { align: AlignmentType.CENTER }),
-                para([run('Độc lập – Tự do – Hạnh phúc', { bold: true, underline: true, size: 28 })], { align: AlignmentType.CENTER }),
-
-                // Dòng trống
-                para([run('')]),
-
-                // Ngày tháng năm
-                para([run(`TP. Hồ Chí Minh, ngày ${d.ngay} tháng ${d.thang} năm ${d.nam}.`, { italic: true })], { align: AlignmentType.RIGHT }),
-
-                // Dòng trống
-                para([run('')]),
-
-                // TIÊU ĐỀ
-                para([run('ĐƠN XIN ĐỔI CA LÀM VIỆC', { bold: true, size: 32 })], { align: AlignmentType.CENTER }),
-
-                // Dòng trống
-                para([run('')]),
-
-                // Kính gửi
-                para([run('Kính gửi: ', { bold: true }), run('Đội trưởng Đội Vận hành, bảo trì đường hầm.')], { align: AlignmentType.CENTER }),
-
-                // Dòng trống
-                para([run('')]),
-
-                // Nội dung
-                para([
-                    run('Tôi tên là: '),
-                    run(d.nguoiXin, { bold: true }),
-                    run(', nhân viên Đội Vận hành, bảo trì đường hầm.'),
-                ], { indent: true }),
-
-                para([
-                    run('Nay tôi viết đơn này xin phép cho tôi đổi ca với ông '),
-                    run(d.nguoiDoi, { bold: true }),
-                    run('.'),
-                ], { indent: true }),
-
-                para([
-                    run('Ca '),
-                    run(d.caDi, { bold: true }),
-                    run(', ông '),
-                    run(d.nguoiDoi, { bold: true }),
-                    run(' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.'),
-                ], { indent: true }),
-
-                para([
-                    run('Ca '),
-                    run(d.caVe, { bold: true }),
-                    run(', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông '),
-                    run(d.nguoiDoi, { bold: true }),
-                    run('.'),
-                ], { indent: true }),
-
-                para([
-                    run('Số lần xin đổi ca trong tháng: '),
-                    run(d.soLan, { bold: true }),
-                    run('.'),
-                ], { indent: true }),
-
-                para([
-                    run('Lý do: '),
-                    run(d.lyDo),
-                ], { indent: true }),
-
-                para([run('')]),
-
-                para([run('Rất mong được sự chấp thuận của Đội trưởng.')], { indent: true }),
-                para([run('Trân trọng cảm ơn.')], { indent: true }),
-
-                // Dòng trống trước bảng ký
-                para([run('')]),
-                para([run('')]),
-
-                // Bảng chữ ký
-                sigTable,
-            ]
-        }]
-    });
-
-    try {
-        const buffer = await Packer.toBlob(doc);
-        const url = URL.createObjectURL(buffer);
-        const a = document.createElement('a');
-        document.body.appendChild(a);
-        a.style.display = 'none';
-        a.href = url;
-        a.download = filename + '.docx';
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 600);
-    } catch(err) {
-        console.error('Lỗi tạo docx:', err);
-        alert('Lỗi tạo file Word: ' + err.message);
-    }
-}
-
-// 6. Gửi Đơn lên Server (Lưu Form)
-document.getElementById('handoverForm').addEventListener('submit', async (e) => {
+// =============================================
+// 6. LƯU ĐƠN LÊN FIREBASE
+// =============================================
+document.getElementById('handoverForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const newRecord = {
-        nguoiXin: document.getElementById('inp_nguoi_xin').value,
-        nguoiDoi: document.getElementById('inp_nguoi_doi').value,
-        caDi: `${document.getElementById('sel_ca_di').value} ngày ${window.formatDateVN(document.getElementById('date_di').value)}`,
-        caVe: `${document.getElementById('sel_ca_ve').value} ngày ${window.formatDateVN(document.getElementById('date_ve').value)}`,
-        soLan: document.getElementById('inp_so_lan').value,
-        lyDo: document.getElementById('inp_ly_do').value,
-        createdAt: new Date().toISOString()
+    var newRecord = {
+        nguoiXin  : document.getElementById('inp_nguoi_xin').value,
+        nguoiDoi  : document.getElementById('inp_nguoi_doi').value,
+        caDi      : document.getElementById('sel_ca_di').value + ' ngày ' + formatDateVN(document.getElementById('date_di').value),
+        caVe      : document.getElementById('sel_ca_ve').value + ' ngày ' + formatDateVN(document.getElementById('date_ve').value),
+        soLan     : document.getElementById('inp_so_lan').value,
+        lyDo      : document.getElementById('inp_ly_do').value,
+        createdAt : new Date().toISOString()
     };
-    
     try {
-        const response = await fetch(`${API_URL}.json`, {
+        var response = await fetch(API_URL + '.json', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newRecord)
         });
-        
-        if (!response.ok) throw new Error('Bạn quên cấp quyền Test Mode');
-        
+        if (!response.ok) throw new Error();
         document.getElementById('handoverForm').reset();
         bindPrintData();
         loadData();
-        alert('✅ Đã ném thẳng lên Đám Mây Google thành công!');
-        
+        alert('✅ Đã lưu lên Đám Mây thành công!');
     } catch(err) {
-        alert('❌ Lưu gặp sự cố! Hãy kiểm tra lại Quy tắc Quyền truy cập Test Mode trên Firebase!');
+        alert('❌ Lưu gặp sự cố! Kiểm tra lại quyền Firebase!');
     }
 });
 
-// 7. Tải lại 1 bản ghi cũ ra Word
+// =============================================
+// 7. TẢI WORD TỪ LỊCH SỬ
+// =============================================
 window.exportWordOldRecord = function(id) {
-    const record = window.allRecords.find(x => x.id === id);
-    if (record) {
-        const date = new Date(record.createdAt);
-        const d = {
-            nguoiXin: record.nguoiXin,
-            nguoiDoi: record.nguoiDoi,
-            caDi: record.caDi,
-            caVe: record.caVe,
-            soLan: record.soLan,
-            lyDo: record.lyDo,
-            ngay: date.getDate().toString().padStart(2, '0'),
-            thang: (date.getMonth() + 1).toString().padStart(2, '0'),
-            nam: date.getFullYear().toString(),
-        };
-        let tenNguoi = window.toTitleCase(record.nguoiXin || "Moi");
-        buildAndDownloadDocx(d, 'Don_Doi_Ca_' + tenNguoi.replace(/ /g, '_'));
-    }
-}
+    var r = window.allRecords.find(function(x) { return x.id === id; });
+    if (!r) return;
+    var d = new Date(r.createdAt);
+    exportDocx({
+        nguoiXin : r.nguoiXin,
+        nguoiDoi : r.nguoiDoi,
+        caDi     : r.caDi,
+        caVe     : r.caVe,
+        soLan    : r.soLan,
+        lyDo     : r.lyDo,
+        ngay     : d.getDate().toString().padStart(2,'0'),
+        thang    : (d.getMonth()+1).toString().padStart(2,'0'),
+        nam      : d.getFullYear().toString()
+    }, 'Don_Doi_Ca_' + toTitleCase(r.nguoiXin || 'Moi').replace(/ /g,'_'));
+};
 
-// 8. Xóa 1 bản ghi
+// =============================================
+// 8. XÓA BẢN GHI
+// =============================================
 window.deleteRecord = async function(id) {
-    if (confirm('⚠️ Bạn có chắc chắn muốn XÓA bản ghi này khỏi máy chủ không? Hành động này không thể hoàn tác.')) {
+    if (confirm('⚠️ Bạn có chắc chắn muốn XÓA bản ghi này không?')) {
         try {
-            await fetch(`${API_URL}/${id}.json`, { method: 'DELETE' });
+            await fetch(API_URL + '/' + id + '.json', { method: 'DELETE' });
             loadData();
-        } catch(e) {
-            alert('Lỗi xóa. Vui lòng thử lại!');
-        }
+        } catch(e) { alert('Lỗi xóa. Vui lòng thử lại!'); }
     }
+};
+
+// =============================================
+// TẠO FILE .DOCX THUẦN OOXML — CHỈ CẦN JSZIP
+// Không phụ thuộc thư viện tạo Word nào khác
+// =============================================
+async function exportDocx(d, filename) {
+    if (typeof JSZip === 'undefined') {
+        alert('JSZip chưa tải xong. Vui lòng kiểm tra mạng và thử lại!');
+        return;
+    }
+
+    // Escape XML
+    function esc(str) {
+        return String(str || '')
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;');
+    }
+
+    // Tạo <w:r> (run) với định dạng
+    function run(text, opts) {
+        opts = opts || {};
+        var bold = opts.bold ? '<w:b/><w:bCs/>' : '';
+        var italic = opts.italic ? '<w:i/><w:iCs/>' : '';
+        var ul = opts.underline ? '<w:u w:val="single"/>' : '';
+        var sz = '<w:sz w:val="' + (opts.size || 28) + '"/><w:szCs w:val="' + (opts.size || 28) + '"/>';
+        return '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>' +
+               bold + italic + ul + sz +
+               '</w:rPr><w:t xml:space="preserve">' + esc(text) + '</w:t></w:r>';
+    }
+
+    // Tạo <w:p> (đoạn văn)
+    function para(runs_arr, opts) {
+        opts = opts || {};
+        var jc = opts.align || 'both';
+        var indent = opts.indent ? '<w:ind w:firstLine="709"/>' : '';
+        var spacing = '<w:spacing w:after="80"/>';
+        var runsXml = runs_arr.map(function(r) {
+            return run(r.text, r);
+        }).join('');
+        return '<w:p><w:pPr><w:jc w:val="' + jc + '"/>' + indent + spacing + '</w:pPr>' + runsXml + '</w:p>';
+    }
+
+    function emptyLine() { return para([{text:''}]); }
+
+    // Ô bảng không viền
+    function cell(content, width) {
+        var nb = '<w:val w:val="none" w:sz="0" w:space="0" w:color="auto"/>';
+        return '<w:tc><w:tcPr><w:tcW w:w="' + width + '" w:type="dxa"/>' +
+               '<w:tcBorders>' +
+               '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+               '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+               '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+               '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+               '</w:tcBorders></w:tcPr>' + content + '</w:tc>';
+    }
+
+    function centerPara(runs_arr) { return para(runs_arr, {align:'center'}); }
+
+    var W1 = 3008, W2 = 3010;
+
+    function emptyRow() {
+        return '<w:tr>' + cell(emptyLine(), W1) + cell(emptyLine(), W2) + cell(emptyLine(), W1) + '</w:tr>';
+    }
+
+    var sigTable =
+        '<w:tbl>' +
+        '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
+        '<w:tblBorders>' +
+        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '</w:tblBorders></w:tblPr>' +
+        '<w:tblGrid><w:gridCol w:w="' + W1 + '"/><w:gridCol w:w="' + W2 + '"/><w:gridCol w:w="' + W1 + '"/></w:tblGrid>' +
+        '<w:tr>' +
+            cell(centerPara([{text:'Người đổi', bold:true}]), W1) +
+            cell(centerPara([{text:'Người viết đơn', bold:true}]), W2) +
+            cell(centerPara([{text:'Đội trưởng', bold:true}]), W1) +
+        '</w:tr>' +
+        emptyRow() + emptyRow() + emptyRow() + emptyRow() +
+        '<w:tr>' +
+            cell(centerPara([{text: toTitleCase(d.nguoiDoi), bold:true}]), W1) +
+            cell(centerPara([{text: toTitleCase(d.nguoiXin), bold:true}]), W2) +
+            cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), W1) +
+        '</w:tr>' +
+        '</w:tbl>';
+
+    var body =
+        para([{text:'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold:true}], {align:'center'}) +
+        para([{text:'Độc lập – Tự do – Hạnh phúc', bold:true, underline:true}], {align:'center'}) +
+        emptyLine() +
+        para([{text:'TP. Hồ Chí Minh, ngày ' + d.ngay + ' tháng ' + d.thang + ' năm ' + d.nam + '.', italic:true}], {align:'right'}) +
+        emptyLine() +
+        para([{text:'ĐƠN XIN ĐỔI CA LÀM VIỆC', bold:true, size:32}], {align:'center'}) +
+        emptyLine() +
+        para([{text:'Kính gửi: ', bold:true}, {text:'Đội trưởng Đội Vận hành, bảo trì đường hầm.'}], {align:'center'}) +
+        emptyLine() +
+        para([{text:'Tôi tên là: '}, {text:d.nguoiXin, bold:true}, {text:', nhân viên Đội Vận hành, bảo trì đường hầm.'}], {indent:true}) +
+        para([{text:'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +
+        para([{text:'Ca '}, {text:d.caDi, bold:true}, {text:', ông '}, {text:d.nguoiDoi, bold:true}, {text:' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.'}], {indent:true}) +
+        para([{text:'Ca '}, {text:d.caVe, bold:true}, {text:', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +
+        para([{text:'Số lần xin đổi ca trong tháng: '}, {text:d.soLan, bold:true}, {text:'.'}], {indent:true}) +
+        para([{text:'Lý do: '}, {text:d.lyDo}], {indent:true}) +
+        emptyLine() +
+        para([{text:'Rất mong được sự chấp thuận của Đội trưởng.'}], {indent:true}) +
+        para([{text:'Trân trọng cảm ơn.'}], {indent:true}) +
+        emptyLine() + emptyLine() +
+        sigTable +
+        '<w:sectPr>' +
+        '<w:pgSz w:w="11906" w:h="16838"/>' +
+        '<w:pgMar w:top="1134" w:right="851" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/>' +
+        '</w:sectPr>';
+
+    var documentXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+        '<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"\n' +
+        '  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">\n' +
+        '<w:body>' + body + '</w:body></w:document>';
+
+    var contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+        '<Default Extension="xml" ContentType="application/xml"/>' +
+        '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+        '</Types>';
+
+    var relsMain = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+        '</Relationships>';
+
+    var relsDoc = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';
+
+    var zip = new JSZip();
+    zip.file('[Content_Types].xml', contentTypes);
+    zip.file('_rels/.rels', relsMain);
+    zip.file('word/document.xml', documentXml);
+    zip.file('word/_rels/document.xml.rels', relsDoc);
+
+    var blob = await zip.generateAsync({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename + '.docx';
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
 }
 
+// =============================================
 // KHỞI TẠO
+// =============================================
 loadData();
 bindPrintData();
