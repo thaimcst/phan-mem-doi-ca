@@ -286,15 +286,13 @@ async function exportDocx(d, filename) {
             cell(centerPara([{text:'Người viết đơn', bold:true}]), HALF) +
         '</w:tr>' +
         // Khoảng trắng để ký
-        emptyRow2() + emptyRow2() + emptyRow2() + emptyRow2() +
+        emptyRow2() + emptyRow2() + emptyRow2() +
         // Tên ký
         '<w:tr>' +
             cell(centerPara([{text: cleanName(d.nguoiDoi), bold:true}]), HALF) +
             cell(centerPara([{text: cleanName(d.nguoiXin), bold:true}]), HALF) +
         '</w:tr>' +
         '</w:tbl>' +
-        // Khoảng cách giữa 2 khối ký tên
-        emptyLine() + emptyLine() +
         // ---- HÀNG 2: Đội trưởng (giữa) ----
         '<w:tbl>' +
         '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
@@ -308,7 +306,6 @@ async function exportDocx(d, filename) {
         '</w:tblBorders></w:tblPr>' +
         '<w:tblGrid><w:gridCol w:w="9026"/></w:tblGrid>' +
         '<w:tr>' + cell(centerPara([{text:'Đội trưởng', bold:true}]), 9026) + '</w:tr>' +
-        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
         '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
         '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
         '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
@@ -334,7 +331,7 @@ async function exportDocx(d, filename) {
         emptyLine() +
         para([{text:'Rất mong được sự chấp thuận của Đội trưởng.'}], {indent:true}) +
         para([{text:'Trân trọng cảm ơn.'}], {indent:true}) +
-        emptyLine() + emptyLine() +
+        emptyLine() +
         sigTable +
         '<w:sectPr>' +
         '<w:pgSz w:w="11906" w:h="16838"/>' +
