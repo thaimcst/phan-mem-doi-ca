@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần Mềm Quản Lý Đổi Ca</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container no-print">
+        <header class="glass-header">
+            <div class="logo">
+                <span class="icon">🔄</span> QUẢN LÝ ĐỔI CA
+            </div>
+            <div class="clock" id="clock">00:00:00</div>
+        </header>
+
+        <main class="main-content">
+            <section class="form-section glass-panel">
+                <h2>Tạo Đơn Đổi Ca</h2>
+                <form id="handoverForm">
+                    <div class="input-group">
+                        <label>Người viết đơn (Họ tên):</label>
+                        <input type="text" id="inp_nguoi_xin" required placeholder="Nhập họ và tên của bạn...">
+                    </div>
+                    <div class="input-group">
+                        <label>Người đổi ca thay thế (Họ tên):</label>
+                        <input type="text" id="inp_nguoi_doi" required placeholder="Nhập họ tên người sẽ trực thay bạn...">
+                    </div>
+                    
+                    <label style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">Ca Chuyển Đi <small>(Ca của bạn để lại)</small>:</label>
+                    <div class="row" style="margin-bottom: 1.2rem;">
+                        <div class="input-group half" style="margin-bottom:0;">
+                            <select id="sel_ca_di" required>
+                                <option value="" disabled selected>Chọn Ca trực</option>
+                                <option value="1">Ca 1</option>
+                                <option value="2">Ca 2</option>
+                                <option value="3">Ca 3</option>
+                                <option value="Hành chính">Ca Hành Chính</option>
+                            </select>
+                        </div>
+                        <div class="input-group half" style="margin-bottom:0;">
+                            <input type="date" id="date_di" required>
+                        </div>
+                    </div>
+
+                    <label style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">Ca Nhận Về <small>(Ca trực bù lại)</small>:</label>
+                    <div class="row" style="margin-bottom: 1.2rem;">
+                        <div class="input-group half" style="margin-bottom:0;">
+                            <select id="sel_ca_ve" required>
+                                <option value="" disabled selected>Chọn Ca trực</option>
+                                <option value="1">Ca 1</option>
+                                <option value="2">Ca 2</option>
+                                <option value="3">Ca 3</option>
+                                <option value="Hành chính">Ca Hành Chính</option>
+                            </select>
+                        </div>
+                        <div class="input-group half" style="margin-bottom:0;">
+                            <input type="date" id="date_ve" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-group half">
+                            <label>Số lần xin đổi ca trong tháng:</label>
+                            <input type="number" id="inp_so_lan" required placeholder="VD: 1" min="1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Lý do (Nội dung chi tiết):</label>
+                        <textarea id="inp_ly_do" required placeholder="Lý do xin đổi ca..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="btnPrintPreview" class="btn btn-secondary">📄 Tải Form Word</button>
+                        <button type="submit" class="btn btn-primary">💾 Lưu Lịch Sử Đơn</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="list-section glass-panel">
+                <h2>Lịch Sử Các Đơn Đã Lưu</h2>
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Ngày tạo</th>
+                                <th>Người xin đổi</th>
+                                <th>Người trực thay</th>
+                                <th>Chi tiết Ca chuyển / Ca nhận</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataBody">
+                            <!-- Dữ liệu server render ra đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- KHU VỰC IN ẨN (CHỈ HIỂN THỊ KHI bấm IN) - Đảm bảo chuẩn format hành chính -->
+    <div id="printArea" class="print-area">
+        <div class="print-header">
+            <b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br>
+            <span class="underline">Độc lập – Tự do – Hạnh phúc</span>
+        </div>
+        <div class="print-date">
+            <i>TP . Hồ Chí Minh, ngày <span id="p_ngay">...</span> tháng <span id="p_thang">...</span> năm <span id="p_nam">...</span>.</i>
+        </div>
+        
+        <h1 class="print-title">ĐƠN XIN ĐỔI CA LÀM VIỆC</h1>
+        
+        <div class="print-kto">
+            <b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.
+        </div>
+        
+        <div class="print-content">
+            <p>Tôi tên là: <span id="p_nguoi_xin">................................................................</span>, nhân viên Đội Vận hành, bảo trì đường hầm.</p>
+            <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông <span id="p_nguoi_doi">........................................................................</span></p>
+            <p>Ca <span id="p_ca_1">........................................</span>, ông <span id="p_nguoi_doi_2">........................................</span> sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+            <p>Ca <span id="p_ca_2">........................................</span>, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông <span id="p_nguoi_doi_3">........................................</span></p>
+            <p>Số lần xin đổi ca trong tháng: <span id="p_so_lan">.........</span></p>
+            <p>Lý do: <span id="p_ly_do">....................................................................................................................................................................</span></p>
+            <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
+            <p>Trân trọng cảm ơn.</p>
+        </div>
+        
+        <table class="print-signatures" style="width: 100%; text-align: center; margin-top: 20px; border-collapse: collapse; border: none;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; border: none; padding: 0;">
+                    <b>Người đổi</b><br><br><br><br>
+                    <b id="p_nguoi_doi_ky">............................</b>
+                </td>
+                <td style="width: 50%; vertical-align: top; border: none; padding: 0;">
+                    <b>Người viết đơn</b><br><br><br><br>
+                    <b id="p_nguoi_xin_ky">............................</b>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center; vertical-align: top; border: none; padding-top: 20px;">
+                    <b>Đội trưởng</b><br><br><br><br>
+                    <b>Nguyễn Văn Trung</b>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
