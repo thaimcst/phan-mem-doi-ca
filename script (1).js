@@ -257,11 +257,18 @@ async function exportDocx(d, filename) {
     }
 
 
-    function emptyRow() {
-        return '<w:tr>' + cell(emptyLine(), W1) + cell(emptyLine(), W2) + cell(emptyLine(), W1) + '</w:tr>';
+    // Chiều rộng cho bảng 2 cột (hàng 1) và bảng 1 cột giữa (hàng Đội trưởng)
+    // Tổng trang = 9026 dxa (A4 trừ lề)
+    var HALF = 4513; // 9026 / 2
+
+    // Hàng trống cho bảng 2 cột
+    function emptyRow2() {
+        return '<w:tr>' + cell(emptyLine(), HALF) + cell(emptyLine(), HALF) + '</w:tr>';
     }
 
+    // Bảng hàng 1: Người đổi (trái) | Người viết đơn (phải)
     var sigTable =
+        // ---- HÀNG 1: Người đổi | Người viết đơn ----
         '<w:tbl>' +
         '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
         '<w:tblBorders>' +
@@ -272,18 +279,38 @@ async function exportDocx(d, filename) {
         '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
         '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
         '</w:tblBorders></w:tblPr>' +
-        '<w:tblGrid><w:gridCol w:w="' + W1 + '"/><w:gridCol w:w="' + W2 + '"/><w:gridCol w:w="' + W1 + '"/></w:tblGrid>' +
+        '<w:tblGrid><w:gridCol w:w="' + HALF + '"/><w:gridCol w:w="' + HALF + '"/></w:tblGrid>' +
+        // Tiêu đề
         '<w:tr>' +
-            cell(centerPara([{text:'Người đổi', bold:true}]), W1) +
-            cell(centerPara([{text:'Người viết đơn', bold:true}]), W2) +
-            cell(centerPara([{text:'Đội trưởng', bold:true}]), W1) +
+            cell(centerPara([{text:'Người đổi', bold:true}]), HALF) +
+            cell(centerPara([{text:'Người viết đơn', bold:true}]), HALF) +
         '</w:tr>' +
-        emptyRow() + emptyRow() + emptyRow() + emptyRow() +
+        // Khoảng trắng để ký
+        emptyRow2() + emptyRow2() + emptyRow2() +
+        // Tên ký
         '<w:tr>' +
-            cell(centerPara([{text: cleanName(d.nguoiDoi), bold:true}]), W1) +
-            cell(centerPara([{text: cleanName(d.nguoiXin), bold:true}]), W2) +
-            cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), W1) +
+            cell(centerPara([{text: cleanName(d.nguoiDoi), bold:true}]), HALF) +
+            cell(centerPara([{text: cleanName(d.nguoiXin), bold:true}]), HALF) +
         '</w:tr>' +
+        '</w:tbl>' +
+        '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr></w:p>' +
+        // ---- HÀNG 2: Đội trưởng (giữa) ----
+        '<w:tbl>' +
+        '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
+        '<w:tblBorders>' +
+        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '</w:tblBorders></w:tblPr>' +
+        '<w:tblGrid><w:gridCol w:w="9026"/></w:tblGrid>' +
+        '<w:tr>' + cell(centerPara([{text:'Đội trưởng', bold:true}]), 9026) + '</w:tr>' +
+        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
+        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
+        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
+        '<w:tr>' + cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), 9026) + '</w:tr>' +
         '</w:tbl>';
 
     var body =
@@ -305,7 +332,7 @@ async function exportDocx(d, filename) {
         emptyLine() +
         para([{text:'Rất mong được sự chấp thuận của Đội trưởng.'}], {indent:true}) +
         para([{text:'Trân trọng cảm ơn.'}], {indent:true}) +
-        emptyLine() + emptyLine() +
+        emptyLine() +
         sigTable +
         '<w:sectPr>' +
         '<w:pgSz w:w="11906" w:h="16838"/>' +
