@@ -119,6 +119,7 @@ document.getElementById('btnPrintPreview').addEventListener('click', function() 
         caVe     : document.getElementById('p_ca_2').textContent,
         soLan    : document.getElementById('inp_so_lan').value || '......',
         lyDo     : document.getElementById('inp_ly_do').value  || '....',
+        loai     : document.querySelector('input[name="loai_don"]:checked').value,
         ngay     : now.getDate().toString().padStart(2,'0'),
         thang    : (now.getMonth()+1).toString().padStart(2,'0'),
         nam      : now.getFullYear().toString()
@@ -137,6 +138,7 @@ document.getElementById('handoverForm').addEventListener('submit', async functio
         caVe      : document.getElementById('sel_ca_ve').value + ' ngày ' + formatDateVN(document.getElementById('date_ve').value),
         soLan     : document.getElementById('inp_so_lan').value,
         lyDo      : document.getElementById('inp_ly_do').value,
+        loai      : document.querySelector('input[name="loai_don"]:checked').value,
         createdAt : new Date().toISOString()
     };
     try {
@@ -169,6 +171,7 @@ window.exportWordOldRecord = function(id) {
         caVe     : r.caVe,
         soLan    : r.soLan,
         lyDo     : r.lyDo,
+        loai     : r.loai || 'nhanvien',
         ngay     : d.getDate().toString().padStart(2,'0'),
         thang    : (d.getMonth()+1).toString().padStart(2,'0'),
         nam      : d.getFullYear().toString()
@@ -223,14 +226,16 @@ async function exportDocx(d, filename) {
         opts = opts || {};
         var jc = opts.align || 'both';
         var indent = opts.indent ? '<w:ind w:firstLine="709"/>' : '';
-        var spacing = '<w:spacing w:after="80"/>';
+        var spacing = '<w:spacing w:after="0" w:line="276" w:lineRule="auto"/>';
         var runsXml = runs_arr.map(function(r) {
             return run(r.text, r);
         }).join('');
         return '<w:p><w:pPr><w:jc w:val="' + jc + '"/>' + indent + spacing + '</w:pPr>' + runsXml + '</w:p>';
     }
 
-    function emptyLine() { return para([{text:''}]); }
+    function emptyLine() {
+        return '<w:p><w:pPr><w:spacing w:after="0" w:line="180" w:lineRule="exact"/></w:pPr></w:p>';
+    }
 
     // Ô bảng không viền
     function cell(content, width) {
@@ -286,13 +291,14 @@ async function exportDocx(d, filename) {
             cell(centerPara([{text:'Người viết đơn', bold:true}]), HALF) +
         '</w:tr>' +
         // Khoảng trắng để ký
-        emptyRow2() + emptyRow2() + emptyRow2() +
+        emptyRow2() + emptyRow2() +
         // Tên ký
         '<w:tr>' +
             cell(centerPara([{text: cleanName(d.nguoiDoi), bold:true}]), HALF) +
             cell(centerPara([{text: cleanName(d.nguoiXin), bold:true}]), HALF) +
         '</w:tr>' +
         '</w:tbl>' +
+        '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr></w:p>' +
         // ---- HÀNG 2: Đội trưởng (giữa) ----
         '<w:tbl>' +
         '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
@@ -308,21 +314,19 @@ async function exportDocx(d, filename) {
         '<w:tr>' + cell(centerPara([{text:'Đội trưởng', bold:true}]), 9026) + '</w:tr>' +
         '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
         '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
-        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
         '<w:tr>' + cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), 9026) + '</w:tr>' +
         '</w:tbl>';
 
     var body =
         para([{text:'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold:true}], {align:'center'}) +
         para([{text:'Độc lập – Tự do – Hạnh phúc', bold:true, underline:true}], {align:'center'}) +
-        emptyLine() +
         para([{text:'TP. Hồ Chí Minh, ngày ' + d.ngay + ' tháng ' + d.thang + ' năm ' + d.nam + '.', italic:true}], {align:'right'}) +
         emptyLine() +
         para([{text:'ĐƠN XIN ĐỔI CA LÀM VIỆC', bold:true, size:32}], {align:'center'}) +
         emptyLine() +
         para([{text:'Kính gửi: ', bold:true}, {text:'Đội trưởng Đội Vận hành, bảo trì đường hầm.'}], {align:'center'}) +
         emptyLine() +
-        para([{text:'Tôi tên là: '}, {text:d.nguoiXin, bold:true}, {text:', nhân viên Đội Vận hành, bảo trì đường hầm.'}], {indent:true}) +
+        para([{text:'Tôi tên là: '}, {text:d.nguoiXin, bold:true}, {text:', ' + (d.loai === 'truongca' ? 'trưởng ca' : 'nhân viên') + ' Đội Vận hành, bảo trì đường hầm.'}], {indent:true}) +
         para([{text:'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +
         para([{text:'Ca '}, {text:d.caDi, bold:true}, {text:', ông '}, {text:d.nguoiDoi, bold:true}, {text:' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.'}], {indent:true}) +
         para([{text:'Ca '}, {text:d.caVe, bold:true}, {text:', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +

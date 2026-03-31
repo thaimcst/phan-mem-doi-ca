@@ -21,12 +21,77 @@
                 <h2>Tạo Đơn Đổi Ca</h2>
                 <form id="handoverForm">
                     <div class="input-group">
+                        <label>Loại đơn:</label>
+                        <div style="display:flex; gap:0.8rem;">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-color);font-size:1rem;margin-bottom:0;">
+                                <input type="radio" name="loai_don" id="radio_nhanvien" value="nhanvien" checked style="width:18px;height:18px;accent-color:var(--primary);padding:0;border:none;background:none;">
+                                👤 Nhân viên
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-color);font-size:1rem;margin-bottom:0;">
+                                <input type="radio" name="loai_don" id="radio_truongca" value="truongca" style="width:18px;height:18px;accent-color:var(--primary);padding:0;border:none;background:none;">
+                                ⭐ Trưởng ca
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-group">
                         <label>Người viết đơn (Họ tên):</label>
-                        <input type="text" id="inp_nguoi_xin" required placeholder="Nhập họ và tên của bạn...">
+                        <select id="inp_nguoi_xin" required>
+                            <option value="" disabled selected>-- Chọn tên --</option>
+                            <option>Nguyễn Phương</option>
+                            <option>Nguyễn Nhật Tiến</option>
+                            <option>Đoàn Văn Hạnh</option>
+                            <option>Nguyễn Minh Thảo</option>
+                            <option>Dương Đại Nghĩa</option>
+                            <option>Phan Quốc Nhật</option>
+                            <option>Nguyễn Minh Trung</option>
+                            <option>Nguyễn Thanh Thuận</option>
+                            <option>Võ Tấn Nghĩa</option>
+                            <option>Nguyễn Văn Hậu</option>
+                            <option>Võ Văn Hoài</option>
+                            <option>Nguyễn Quốc Thái</option>
+                            <option>Phạm Bá Quỳnh</option>
+                            <option>Trần Minh Tân</option>
+                            <option>Nguyễn Hoài Nam</option>
+                            <option>Hồ Trung Hiếu</option>
+                            <option>Đặng Thái Nguyên</option>
+                            <option>Phan Hoàng Thanh</option>
+                            <option>Hồng Mạnh Thái</option>
+                            <option>Bùi Văn Hùng</option>
+                            <option>Đặng Ngọc Hòa</option>
+                            <option>Nguyễn Thành Long</option>
+                            <option>Trần Hải Dương</option>
+                            <option>Ngụy Huỳnh Trung</option>
+                        </select>
                     </div>
                     <div class="input-group">
                         <label>Người đổi ca thay thế (Họ tên):</label>
-                        <input type="text" id="inp_nguoi_doi" required placeholder="Nhập họ tên người sẽ trực thay bạn...">
+                        <select id="inp_nguoi_doi" required>
+                            <option value="" disabled selected>-- Chọn tên --</option>
+                            <option>Nguyễn Phương</option>
+                            <option>Nguyễn Nhật Tiến</option>
+                            <option>Đoàn Văn Hạnh</option>
+                            <option>Nguyễn Minh Thảo</option>
+                            <option>Dương Đại Nghĩa</option>
+                            <option>Phan Quốc Nhật</option>
+                            <option>Nguyễn Minh Trung</option>
+                            <option>Nguyễn Thanh Thuận</option>
+                            <option>Võ Tấn Nghĩa</option>
+                            <option>Nguyễn Văn Hậu</option>
+                            <option>Võ Văn Hoài</option>
+                            <option>Nguyễn Quốc Thái</option>
+                            <option>Phạm Bá Quỳnh</option>
+                            <option>Trần Minh Tân</option>
+                            <option>Nguyễn Hoài Nam</option>
+                            <option>Hồ Trung Hiếu</option>
+                            <option>Đặng Thái Nguyên</option>
+                            <option>Phan Hoàng Thanh</option>
+                            <option>Hồng Mạnh Thái</option>
+                            <option>Bùi Văn Hùng</option>
+                            <option>Đặng Ngọc Hòa</option>
+                            <option>Nguyễn Thành Long</option>
+                            <option>Trần Hải Dương</option>
+                            <option>Ngụy Huỳnh Trung</option>
+                        </select>
                     </div>
                     
                     <label style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">Ca Chuyển Đi <small>(Ca của bạn để lại)</small>:</label>
