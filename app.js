@@ -129,7 +129,136 @@ document.querySelectorAll('input, select, textarea').forEach(e => {
 });
 
 // ===== PRINT =====
-document.getElementById('btnPrint').onclick = () => { bind(); window.print(); };
+document.getElementById('btnPrint').onclick = () => {
+  bind();
+
+  const has2 = document.getElementById('chk2').checked;
+  const now = new Date();
+
+  // Lấy dữ liệu từ form
+  const nx  = document.getElementById('nx').value  || '............................';
+  const nd  = document.getElementById('nd').value  || '............................';
+  const nd2 = has2 ? (document.getElementById('nd2').value || '............................') : '';
+  const cdi = document.getElementById('cdi').value;
+  const ddi = document.getElementById('ddi').value;
+  const cve = document.getElementById('cve').value;
+  const dve = document.getElementById('dve').value;
+  const cdi2 = has2 ? document.getElementById('cdi2').value : '';
+  const ddi2 = has2 ? document.getElementById('ddi2').value : '';
+  const cve2 = has2 ? document.getElementById('cve2').value : '';
+  const dve2 = has2 ? document.getElementById('dve2').value : '';
+  const sl  = document.getElementById('sl').value  || '......';
+  const ld  = document.getElementById('ld').value  || '...............................................................................';
+  const loai = document.querySelector('input[name="loai"]:checked').value;
+  const cd  = loai === 'truongca' ? 'trưởng ca' : 'nhân viên';
+
+  const dotsCa = '.................................................';
+  const c1 = (cdi && ddi) ? cdi + ' ngày ' + fd(ddi) : dotsCa;
+  const c2 = (cve && dve) ? cve + ' ngày ' + fd(dve) : dotsCa;
+  const c1b = has2 && cdi2 && ddi2 ? cdi2 + ' ngày ' + fd(ddi2) : dotsCa;
+  const c2b = has2 && cve2 && dve2 ? cve2 + ' ngày ' + fd(dve2) : dotsCa;
+
+  const ng = now.getDate().toString().padStart(2,'0');
+  const th = (now.getMonth()+1).toString().padStart(2,'0');
+  const na = now.getFullYear();
+
+  // Phần người đổi 2 (nếu có)
+  const para2 = has2 ? `
+    <p>${c1b}, ông ${nd2} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+    <p>${c2b}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${nd2}.</p>
+  ` : '';
+
+  const ndLine = has2 ? `${nd} và ông ${nd2}` : nd;
+
+  // Phần chữ ký
+  const sigHTML = has2 ? `
+    <table class="sig-tbl">
+      <tr>
+        <td>Người đổi (1)</td>
+        <td>Người đổi (2)</td>
+        <td>Người viết đơn</td>
+      </tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr>
+        <td>${tc(nd)}</td>
+        <td>${tc(nd2)}</td>
+        <td>${tc(nx)}</td>
+      </tr>
+    </table>
+    <table class="sig-tbl" style="margin-top:16px">
+      <tr><td colspan="3" style="text-align:center">Đội trưởng</td></tr>
+      <tr class="sig-space"><td colspan="3"></td></tr>
+      <tr class="sig-space"><td colspan="3"></td></tr>
+      <tr class="sig-space"><td colspan="3"></td></tr>
+      <tr class="sig-space"><td colspan="3"></td></tr>
+      <tr class="sig-space"><td colspan="3"></td></tr>
+      <tr><td colspan="3" style="text-align:center;font-weight:bold">Nguyễn Văn Trung</td></tr>
+    </table>
+  ` : `
+    <table class="sig-tbl">
+      <tr>
+        <td>Người đổi</td>
+        <td>Đội trưởng</td>
+        <td>Người viết đơn</td>
+      </tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr>
+        <td>${tc(nd)}</td>
+        <td style="font-weight:bold">Nguyễn Văn Trung</td>
+        <td>${tc(nx)}</td>
+      </tr>
+    </table>
+  `;
+
+  const html = `<!DOCTYPE html><html lang="vi"><head>
+    <meta charset="UTF-8">
+    <title>Đơn Xin Đổi Ca</title>
+    <style>
+      @page { size: A4; margin: 20mm 18mm 20mm 25mm; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.6; color: #000; background: #fff; }
+      .ph { text-align: center; margin-bottom: 2px; }
+      .ph .ul { font-weight: bold; text-decoration: underline; }
+      .pd { text-align: right; margin: 4px 0 14px; font-style: italic; font-size: 12pt; }
+      .pt { text-align: center; font-size: 15pt; font-weight: bold; margin: 10px 0; }
+      .pkg { text-align: center; margin-bottom: 14px; font-size: 12pt; }
+      .pc p { text-indent: 10mm; margin-bottom: 3px; text-align: justify; font-size: 12pt; }
+      .sig-tbl { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .sig-tbl td { text-align: center; font-size: 12pt; padding: 0; border: none; width: 33.33%; }
+      .sig-space td { height: 14px; }
+    </style>
+  </head><body>
+    <div class="ph"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><span class="ul">Độc lập – Tự do – Hạnh phúc</span></div>
+    <div class="pd"><i>TP. Hồ Chí Minh, ngày ${ng} tháng ${th} năm ${na}.</i></div>
+    <div class="pt">ĐƠN XIN ĐỔI CA LÀM VIỆC</div>
+    <div class="pkg"><b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
+    <div class="pc">
+      <p>Tôi tên là: ${nx}, ${cd} Đội Vận hành, bảo trì đường hầm.</p>
+      <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ${ndLine}.</p>
+      <p>${c1}, ông ${nd} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+      <p>${c2}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${nd}.</p>
+      ${para2}
+      <p>Số lần đã đổi ca trong tháng: ${sl}.</p>
+      <p>Lý do: ${ld}.</p>
+      <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
+      <p>Trân trọng cảm ơn.</p>
+    </div>
+    ${sigHTML}
+    <script>window.onload = function(){ window.print(); window.onafterprint = function(){ window.close(); }; }<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank', 'width=800,height=600');
+  w.document.write(html);
+  w.document.close();
+};
 
 // ===== EXPORT WORD =====
 document.getElementById('btnWord').onclick = () => {
