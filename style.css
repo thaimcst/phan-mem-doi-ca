@@ -561,3 +561,67 @@ tr:hover td {
     font-weight: bold;
   }
 }
+
+/* ===== TOGGLE NGƯỜI ĐỔI 2 ===== */
+.toggle-wrap {
+  margin: 0.75rem 0;
+}
+.toggle-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius2);
+  background: rgba(99,102,241,0.1);
+  border: 1px dashed rgba(99,102,241,0.35);
+  color: #a5b4fc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+.toggle-label input:checked + .toggle-btn {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.35);
+  color: #fca5a5;
+}
+.toggle-label input:checked + .toggle-btn::before {
+  content: '➖ ';
+}
+.toggle-label input:checked + .toggle-btn {
+  content: '';
+}
+.person-block {
+  border-left: 2px solid var(--border2);
+  padding-left: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.person-label-1 {
+  color: var(--accent) !important;
+}
+.person-label-2 {
+  color: var(--green) !important;
+}
+
+/* ===== 3 CỘT CHỮ KÝ ===== */
+@media print {
+  .sig-row3 {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .sig-row3 .sig-box {
+    flex: 1;
+    padding: 0 6px;
+    font-size: 11pt;
+  }
+}
