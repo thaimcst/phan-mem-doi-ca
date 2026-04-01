@@ -308,35 +308,37 @@ async function expDocx(d, fn) {
   const cd = d.loai === 'truongca' ? 'trưởng ca' : 'nhân viên';
   const has2 = !!d.nd2;
 
-  // Chữ ký
-  let sig;
+  // Chữ ký — 1 bảng 3 cột đều nhau, khớp đúng vùng nội dung A4
+  // Content width = 11906 (A4) - 1701 (lề trái) - 851 (lề phải) = 9354 dxa
+  const TW = 9354; const W = 3118; const WM = 3118; // 3118 * 3 = 9354
+  let sigCol1Label, sigCol1Name, sigCol2Label, sigCol2Name, sigCol3Label, sigCol3Name;
   if (!has2) {
-    const H = 4513;
-    sig = '<w:tbl><w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' + nb + '</w:tblPr>'
-      + '<w:tblGrid><w:gridCol w:w="' + H + '"/><w:gridCol w:w="' + H + '"/></w:tblGrid>'
-      + '<w:tr>' + cell(cp([{ t: 'Người đổi' }]), H) + cell(cp([{ t: 'Người viết đơn' }]), H) + '</w:tr>'
-      + '<w:tr>' + cell(el(), H) + cell(el(), H) + '</w:tr>'
-      + '<w:tr>' + cell(el(), H) + cell(el(), H) + '</w:tr>'
-      + '<w:tr>' + cell(cp([{ t: cl(d.nd) }]), H) + cell(cp([{ t: cl(d.nx) }]), H) + '</w:tr>'
-      + '</w:tbl>';
+    sigCol1Label = 'Người đổi';      sigCol1Name = cl(d.nd);
+    sigCol2Label = 'Đội trưởng';     sigCol2Name = 'Nguyễn Văn Trung';
+    sigCol3Label = 'Người viết đơn'; sigCol3Name = cl(d.nx);
   } else {
-    const W3 = 3008;
-    sig = '<w:tbl><w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' + nb + '</w:tblPr>'
-      + '<w:tblGrid><w:gridCol w:w="' + W3 + '"/><w:gridCol w:w="' + W3 + '"/><w:gridCol w:w="' + W3 + '"/></w:tblGrid>'
-      + '<w:tr>' + cell(cp([{ t: 'Người đổi (1)' }]), W3) + cell(cp([{ t: 'Người đổi (2)' }]), W3) + cell(cp([{ t: 'Người viết đơn' }]), W3) + '</w:tr>'
-      + '<w:tr>' + cell(el(), W3) + cell(el(), W3) + cell(el(), W3) + '</w:tr>'
-      + '<w:tr>' + cell(el(), W3) + cell(el(), W3) + cell(el(), W3) + '</w:tr>'
-      + '<w:tr>' + cell(cp([{ t: cl(d.nd) }]), W3) + cell(cp([{ t: cl(d.nd2) }]), W3) + cell(cp([{ t: cl(d.nx) }]), W3) + '</w:tr>'
-      + '</w:tbl>';
+    sigCol1Label = 'Người đổi (1)';  sigCol1Name = cl(d.nd);
+    sigCol2Label = 'Người đổi (2)';  sigCol2Name = cl(d.nd2);
+    sigCol3Label = 'Người viết đơn'; sigCol3Name = cl(d.nx);
   }
 
-  const sigDT = '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>'
-    + '<w:tbl><w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' + nb + '</w:tblPr>'
-    + '<w:tblGrid><w:gridCol w:w="9026"/></w:tblGrid>'
-    + '<w:tr>' + cell(cp([{ t: 'Đội trưởng' }]), 9026) + '</w:tr>'
-    + '<w:tr>' + cell(el(), 9026) + '</w:tr><w:tr>' + cell(el(), 9026) + '</w:tr>'
-    + '<w:tr>' + cell(cp([{ t: 'Nguyễn Văn Trung', bold: true }]), 9026) + '</w:tr>'
+  const sig = '<w:tbl><w:tblPr><w:tblW w:w="' + TW + '" w:type="dxa"/>' + nb + '</w:tblPr>'
+    + '<w:tblGrid><w:gridCol w:w="' + W + '"/><w:gridCol w:w="' + WM + '"/><w:gridCol w:w="' + W + '"/></w:tblGrid>'
+    + '<w:tr>' + cell(cp([{ t: sigCol1Label }]), W) + cell(cp([{ t: sigCol2Label }]), WM) + cell(cp([{ t: sigCol3Label }]), W) + '</w:tr>'
+    + '<w:tr>' + cell(el(), W) + cell(el(), WM) + cell(el(), W) + '</w:tr>'
+    + '<w:tr>' + cell(el(), W) + cell(el(), WM) + cell(el(), W) + '</w:tr>'
+    + '<w:tr>' + cell(el(), W) + cell(el(), WM) + cell(el(), W) + '</w:tr>'
+    + '<w:tr>' + cell(el(), W) + cell(el(), WM) + cell(el(), W) + '</w:tr>'
+    + '<w:tr>' + cell(el(), W) + cell(el(), WM) + cell(el(), W) + '</w:tr>'
+    + '<w:tr>'
+      + cell(cp([{ t: sigCol1Name }]), W)
+      + cell(cp([{ t: sigCol2Name, bold: !has2 }]), WM)
+      + cell(cp([{ t: sigCol3Name }]), W)
+    + '</w:tr>'
     + '</w:tbl>';
+
+  // sigDT không còn cần thiết nữa (đã gộp vào sig)
+  const sigDT = '';
 
   let bodyParas =
     para([{ t: 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold: true }], { jc: 'center' }) +
