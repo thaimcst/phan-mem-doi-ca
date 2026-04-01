@@ -128,49 +128,9 @@ document.querySelectorAll('input, select, textarea').forEach(e => {
   e.addEventListener('change', bind);
 });
 
-// ===== PRINT =====
-document.getElementById('btnPrint').onclick = () => {
-  bind();
-
-  const has2 = document.getElementById('chk2').checked;
-  const now = new Date();
-
-  // Lấy dữ liệu từ form
-  const nx  = document.getElementById('nx').value  || '............................';
-  const nd  = document.getElementById('nd').value  || '............................';
-  const nd2 = has2 ? (document.getElementById('nd2').value || '............................') : '';
-  const cdi = document.getElementById('cdi').value;
-  const ddi = document.getElementById('ddi').value;
-  const cve = document.getElementById('cve').value;
-  const dve = document.getElementById('dve').value;
-  const cdi2 = has2 ? document.getElementById('cdi2').value : '';
-  const ddi2 = has2 ? document.getElementById('ddi2').value : '';
-  const cve2 = has2 ? document.getElementById('cve2').value : '';
-  const dve2 = has2 ? document.getElementById('dve2').value : '';
-  const sl  = document.getElementById('sl').value  || '......';
-  const ld  = document.getElementById('ld').value  || '...............................................................................';
-  const loai = document.querySelector('input[name="loai"]:checked').value;
-  const cd  = loai === 'truongca' ? 'trưởng ca' : 'nhân viên';
-
-  const dotsCa = '.................................................';
-  const c1 = (cdi && ddi) ? cdi + ' ngày ' + fd(ddi) : dotsCa;
-  const c2 = (cve && dve) ? cve + ' ngày ' + fd(dve) : dotsCa;
-  const c1b = has2 && cdi2 && ddi2 ? cdi2 + ' ngày ' + fd(ddi2) : dotsCa;
-  const c2b = has2 && cve2 && dve2 ? cve2 + ' ngày ' + fd(dve2) : dotsCa;
-
-  const ng = now.getDate().toString().padStart(2,'0');
-  const th = (now.getMonth()+1).toString().padStart(2,'0');
-  const na = now.getFullYear();
-
-  // Phần người đổi 2 (nếu có)
-  const para2 = has2 ? `
-    <p>${c1b}, ông ${nd2} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
-    <p>${c2b}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${nd2}.</p>
-  ` : '';
-
-  const ndLine = has2 ? `${nd} và ông ${nd2}` : nd;
-
-  // Phần chữ ký
+// ===== HELPER: tạo HTML nội dung đơn =====
+function buildDonHTML(d) {
+  const has2 = !!d.nd2;
   const spaceRows = `
       <tr class="sig-space"><td></td><td></td></tr>
       <tr class="sig-space"><td></td><td></td></tr>
@@ -193,66 +153,197 @@ document.getElementById('btnPrint').onclick = () => {
       <tr class="sig-space"><td></td></tr>
       <tr><td style="text-align:center;font-weight:bold">Nguyễn Văn Trung</td></tr>
     </table>`;
-
   const sigHTML = has2 ? `
     <table class="sig-tbl">
       <tr><td>Người đổi (1)</td><td>Người đổi (2)</td><td>Người viết đơn</td></tr>
       ${spaceRows3}
-      <tr><td>${tc(nd)}</td><td>${tc(nd2)}</td><td>${tc(nx)}</td></tr>
-    </table>
-    ${dtBlock}
+      <tr><td>${tc(d.nd)}</td><td>${tc(d.nd2)}</td><td>${tc(d.nx)}</td></tr>
+    </table>${dtBlock}
   ` : `
     <table class="sig-tbl">
       <tr><td>Người đổi</td><td>Người viết đơn</td></tr>
       ${spaceRows}
-      <tr><td>${tc(nd)}</td><td>${tc(nx)}</td></tr>
-    </table>
-    ${dtBlock}
+      <tr><td>${tc(d.nd)}</td><td>${tc(d.nx)}</td></tr>
+    </table>${dtBlock}
   `;
+  const para2 = has2 ? `
+    <p>${d.c1b}, ông ${d.nd2} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+    <p>${d.c2b}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${d.nd2}.</p>
+  ` : '';
+  const ndLine = has2 ? `${d.nd} và ông ${d.nd2}` : d.nd;
 
-  const html = `<!DOCTYPE html><html lang="vi"><head>
-    <meta charset="UTF-8">
-    <title>Đơn Xin Đổi Ca</title>
-    <style>
-      @page { size: A4; margin: 20mm 18mm 20mm 25mm; }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.6; color: #000; background: #fff; }
-      .ph { text-align: center; margin-bottom: 2px; }
-      .ph .ul { font-weight: bold; text-decoration: underline; }
-      .pd { text-align: right; margin: 4px 0 14px; font-style: italic; font-size: 12pt; }
-      .pt { text-align: center; font-size: 15pt; font-weight: bold; margin: 10px 0; }
-      .pkg { text-align: center; margin-bottom: 14px; font-size: 12pt; }
-      .pc p { text-indent: 10mm; margin-bottom: 3px; text-align: justify; font-size: 12pt; }
-      .sig-tbl { width: 100%; border-collapse: collapse; margin-top: 20px; }
-      .sig-tbl td { text-align: center; font-size: 12pt; padding: 0; border: none; }
-      .sig-space td { height: 14px; }
-    </style>
-  </head><body>
+  return `
     <div class="ph"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><span class="ul">Độc lập – Tự do – Hạnh phúc</span></div>
-    <div class="pd"><i>TP. Hồ Chí Minh, ngày ${ng} tháng ${th} năm ${na}.</i></div>
+    <div class="pd"><i>TP. Hồ Chí Minh, ngày ${d.ng} tháng ${d.th} năm ${d.na}.</i></div>
     <div class="pt">ĐƠN XIN ĐỔI CA LÀM VIỆC</div>
     <div class="pkg"><b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
     <div class="pc">
-      <p>Tôi tên là: ${nx}, ${cd} Đội Vận hành, bảo trì đường hầm.</p>
+      <p>Tôi tên là: ${d.nx}, ${d.cd} Đội Vận hành, bảo trì đường hầm.</p>
       <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ${ndLine}.</p>
-      <p>${c1}, ông ${nd} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
-      <p>${c2}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${nd}.</p>
+      <p>${d.c1}, ông ${d.nd} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+      <p>${d.c2}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${d.nd}.</p>
       ${para2}
-      <p>Số lần đã đổi ca trong tháng: ${sl}.</p>
-      <p>Lý do: ${ld}.</p>
+      <p>Số lần đã đổi ca trong tháng: ${d.sl}.</p>
+      <p>Lý do: ${d.ld}.</p>
       <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
       <p>Trân trọng cảm ơn.</p>
     </div>
-    ${sigHTML}
-    <script>window.onload = function(){ window.print(); window.onafterprint = function(){ window.close(); }; }<\/script>
-  </body></html>`;
+    ${sigHTML}`;
+}
 
+function collectFormData() {
+  const has2 = document.getElementById('chk2').checked;
+  const now = new Date();
+  const dotsCa = '.................................................';
+  const nx  = document.getElementById('nx').value  || '............................';
+  const nd  = document.getElementById('nd').value  || '............................';
+  const nd2 = has2 ? (document.getElementById('nd2').value || '............................') : '';
+  const cdi = document.getElementById('cdi').value;
+  const ddi = document.getElementById('ddi').value;
+  const cve = document.getElementById('cve').value;
+  const dve = document.getElementById('dve').value;
+  return {
+    nx, nd, nd2: has2 ? nd2 : null,
+    c1: (cdi && ddi) ? cdi + ' ngày ' + fd(ddi) : dotsCa,
+    c2: (cve && dve) ? cve + ' ngày ' + fd(dve) : dotsCa,
+    c1b: has2 && document.getElementById('cdi2').value && document.getElementById('ddi2').value
+      ? document.getElementById('cdi2').value + ' ngày ' + fd(document.getElementById('ddi2').value) : dotsCa,
+    c2b: has2 && document.getElementById('cve2').value && document.getElementById('dve2').value
+      ? document.getElementById('cve2').value + ' ngày ' + fd(document.getElementById('dve2').value) : dotsCa,
+    sl:  document.getElementById('sl').value  || '......',
+    ld:  document.getElementById('ld').value  || '...............................................................................',
+    cd:  document.querySelector('input[name="loai"]:checked').value === 'truongca' ? 'trưởng ca' : 'nhân viên',
+    ng:  now.getDate().toString().padStart(2,'0'),
+    th:  (now.getMonth()+1).toString().padStart(2,'0'),
+    na:  now.getFullYear()
+  };
+}
+
+const DON_CSS = `
+  @page{size:A4;margin:20mm 18mm 20mm 25mm}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Times New Roman',Times,serif;font-size:13pt;line-height:1.6;color:#000;background:#fff}
+  .ph{text-align:center;margin-bottom:2px}
+  .ul{font-weight:bold;text-decoration:underline}
+  .pd{text-align:right;margin:4px 0 14px;font-style:italic;font-size:12pt}
+  .pt{text-align:center;font-size:15pt;font-weight:bold;margin:10px 0}
+  .pkg{text-align:center;margin-bottom:14px;font-size:12pt}
+  .pc p{text-indent:10mm;margin-bottom:3px;text-align:justify;font-size:12pt}
+  .sig-tbl{width:100%;border-collapse:collapse;margin-top:20px}
+  .sig-tbl td{text-align:center;font-size:12pt;padding:0;border:none}
+  .sig-space td{height:14px}
+`;
+
+function buildDonHTML(d) {
+  const has2 = !!d.nd2;
+  const sp2  = '<tr class="sig-space"><td></td><td></td></tr>'.repeat(5);
+  const sp3  = '<tr class="sig-space"><td></td><td></td><td></td></tr>'.repeat(5);
+  const sp1  = '<tr class="sig-space"><td></td></tr>'.repeat(5);
+  const dtBlock = `<table class="sig-tbl" style="margin-top:16px">
+    <tr><td style="text-align:center">Đội trưởng</td></tr>
+    ${sp1}
+    <tr><td style="text-align:center;font-weight:bold">Nguyễn Văn Trung</td></tr>
+  </table>`;
+  const sigHTML = has2 ? `
+    <table class="sig-tbl"><tr><td>Người đổi (1)</td><td>Người đổi (2)</td><td>Người viết đơn</td></tr>
+    ${sp3}<tr><td>${tc(d.nd)}</td><td>${tc(d.nd2)}</td><td>${tc(d.nx)}</td></tr></table>${dtBlock}
+  ` : `
+    <table class="sig-tbl"><tr><td>Người đổi</td><td>Người viết đơn</td></tr>
+    ${sp2}<tr><td>${tc(d.nd)}</td><td>${tc(d.nx)}</td></tr></table>${dtBlock}
+  `;
+  const ndLine = has2 ? `${d.nd} và ông ${d.nd2}` : d.nd;
+  const para2 = has2 ? `
+    <p>${d.c1b}, ông ${d.nd2} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+    <p>${d.c2b}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${d.nd2}.</p>` : '';
+  return `
+    <div class="ph"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><span class="ul">Độc lập – Tự do – Hạnh phúc</span></div>
+    <div class="pd"><i>TP. Hồ Chí Minh, ngày ${d.ng} tháng ${d.th} năm ${d.na}.</i></div>
+    <div class="pt">ĐƠN XIN ĐỔI CA LÀM VIỆC</div>
+    <div class="pkg"><b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
+    <div class="pc">
+      <p>Tôi tên là: ${d.nx}, ${d.cd} Đội Vận hành, bảo trì đường hầm.</p>
+      <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ${ndLine}.</p>
+      <p>${d.c1}, ông ${d.nd} sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+      <p>${d.c2}, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ${d.nd}.</p>
+      ${para2}
+      <p>Số lần đã đổi ca trong tháng: ${d.sl}.</p>
+      <p>Lý do: ${d.ld}.</p>
+      <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
+      <p>Trân trọng cảm ơn.</p>
+    </div>
+    ${sigHTML}`;
+}
+
+function collectFormData() {
+  const has2 = document.getElementById('chk2').checked;
+  const now  = new Date();
+  const dots = '.................................................';
+  const nx   = document.getElementById('nx').value  || '............................';
+  const nd   = document.getElementById('nd').value  || '............................';
+  const nd2  = has2 ? (document.getElementById('nd2').value || '............................') : null;
+  const cdi  = document.getElementById('cdi').value;
+  const ddi  = document.getElementById('ddi').value;
+  const cve  = document.getElementById('cve').value;
+  const dve  = document.getElementById('dve').value;
+  const cdi2 = has2 ? document.getElementById('cdi2').value : '';
+  const ddi2 = has2 ? document.getElementById('ddi2').value : '';
+  const cve2 = has2 ? document.getElementById('cve2').value : '';
+  const dve2 = has2 ? document.getElementById('dve2').value : '';
+  return {
+    nx, nd, nd2,
+    c1:  (cdi&&ddi) ? cdi+' ngày '+fd(ddi) : dots,
+    c2:  (cve&&dve) ? cve+' ngày '+fd(dve) : dots,
+    c1b: (has2&&cdi2&&ddi2) ? cdi2+' ngày '+fd(ddi2) : dots,
+    c2b: (has2&&cve2&&dve2) ? cve2+' ngày '+fd(dve2) : dots,
+    sl:  document.getElementById('sl').value  || '......',
+    ld:  document.getElementById('ld').value  || '...............................................................................',
+    cd:  document.querySelector('input[name="loai"]:checked').value==='truongca' ? 'trưởng ca' : 'nhân viên',
+    ng:  now.getDate().toString().padStart(2,'0'),
+    th:  (now.getMonth()+1).toString().padStart(2,'0'),
+    na:  now.getFullYear()
+  };
+}
+
+// ===== PRINT =====
+document.getElementById('btnPrint').onclick = () => {
+  bind();
+  const d = collectFormData();
+  const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+    <title>Đơn Xin Đổi Ca</title><style>${DON_CSS}</style></head><body>
+    ${buildDonHTML(d)}
+    <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};<\/script>
+  </body></html>`;
   const w = window.open('', '_blank', 'width=800,height=600');
   w.document.write(html);
   w.document.close();
 };
 
-// ===== EXPORT WORD =====
+// ===== EXPORT PDF =====
+document.getElementById('btnPdf').onclick = async () => {
+  bind();
+  if (typeof html2pdf === 'undefined') { alert('Thư viện PDF chưa tải, vui lòng thử lại!'); return; }
+  const btn = document.getElementById('btnPdf');
+  btn.textContent = '⏳ Đang tạo...';
+  btn.disabled = true;
+  try {
+    const d = collectFormData();
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'font-family:Times New Roman,Times,serif;font-size:13pt;line-height:1.6;color:#000;background:#fff;padding:0;width:170mm';
+    wrapper.innerHTML = `<style>${DON_CSS}</style>` + buildDonHTML(d);
+    document.body.appendChild(wrapper);
+    const filename = 'Don_Doi_Ca_' + tc(d.nx||'Moi').replace(/ /g,'_') + '.pdf';
+    await html2pdf().set({
+      margin: [20, 18, 20, 25],
+      filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(wrapper).save();
+    document.body.removeChild(wrapper);
+  } catch(e) { alert('Lỗi tạo PDF: ' + e.message); }
+  btn.textContent = '📑 PDF';
+  btn.disabled = false;
+};
 document.getElementById('btnWord').onclick = () => {
   bind();
   const has2 = document.getElementById('chk2').checked;
