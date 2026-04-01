@@ -171,51 +171,43 @@ document.getElementById('btnPrint').onclick = () => {
   const ndLine = has2 ? `${nd} và ông ${nd2}` : nd;
 
   // Phần chữ ký
+  const spaceRows = `
+      <tr class="sig-space"><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td></tr>`;
+  const spaceRows3 = `
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>`;
+  const dtBlock = `
+    <table class="sig-tbl" style="margin-top:16px">
+      <tr><td style="text-align:center">Đội trưởng</td></tr>
+      <tr class="sig-space"><td></td></tr>
+      <tr class="sig-space"><td></td></tr>
+      <tr class="sig-space"><td></td></tr>
+      <tr class="sig-space"><td></td></tr>
+      <tr class="sig-space"><td></td></tr>
+      <tr><td style="text-align:center;font-weight:bold">Nguyễn Văn Trung</td></tr>
+    </table>`;
+
   const sigHTML = has2 ? `
     <table class="sig-tbl">
-      <tr>
-        <td>Người đổi (1)</td>
-        <td>Người đổi (2)</td>
-        <td>Người viết đơn</td>
-      </tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr>
-        <td>${tc(nd)}</td>
-        <td>${tc(nd2)}</td>
-        <td>${tc(nx)}</td>
-      </tr>
+      <tr><td>Người đổi (1)</td><td>Người đổi (2)</td><td>Người viết đơn</td></tr>
+      ${spaceRows3}
+      <tr><td>${tc(nd)}</td><td>${tc(nd2)}</td><td>${tc(nx)}</td></tr>
     </table>
-    <table class="sig-tbl" style="margin-top:16px">
-      <tr><td colspan="3" style="text-align:center">Đội trưởng</td></tr>
-      <tr class="sig-space"><td colspan="3"></td></tr>
-      <tr class="sig-space"><td colspan="3"></td></tr>
-      <tr class="sig-space"><td colspan="3"></td></tr>
-      <tr class="sig-space"><td colspan="3"></td></tr>
-      <tr class="sig-space"><td colspan="3"></td></tr>
-      <tr><td colspan="3" style="text-align:center;font-weight:bold">Nguyễn Văn Trung</td></tr>
-    </table>
+    ${dtBlock}
   ` : `
     <table class="sig-tbl">
-      <tr>
-        <td>Người đổi</td>
-        <td>Đội trưởng</td>
-        <td>Người viết đơn</td>
-      </tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr class="sig-space"><td></td><td></td><td></td></tr>
-      <tr>
-        <td>${tc(nd)}</td>
-        <td style="font-weight:bold">Nguyễn Văn Trung</td>
-        <td>${tc(nx)}</td>
-      </tr>
+      <tr><td>Người đổi</td><td>Người viết đơn</td></tr>
+      ${spaceRows}
+      <tr><td>${tc(nd)}</td><td>${tc(nx)}</td></tr>
     </table>
+    ${dtBlock}
   `;
 
   const html = `<!DOCTYPE html><html lang="vi"><head>
@@ -232,7 +224,7 @@ document.getElementById('btnPrint').onclick = () => {
       .pkg { text-align: center; margin-bottom: 14px; font-size: 12pt; }
       .pc p { text-indent: 10mm; margin-bottom: 3px; text-align: justify; font-size: 12pt; }
       .sig-tbl { width: 100%; border-collapse: collapse; margin-top: 20px; }
-      .sig-tbl td { text-align: center; font-size: 12pt; padding: 0; border: none; width: 33.33%; }
+      .sig-tbl td { text-align: center; font-size: 12pt; padding: 0; border: none; }
       .sig-space td { height: 14px; }
     </style>
   </head><body>
