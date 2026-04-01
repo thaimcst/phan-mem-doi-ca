@@ -1,217 +1,238 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phần Mềm Quản Lý Đổi Ca</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Đổi Ca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container no-print">
-        <header class="glass-header">
-            <div class="logo">
-                <span class="icon">🔄</span> QUẢN LÝ ĐỔI CA
+
+<!-- ===== APP UI (hidden when printing) ===== -->
+<div class="no-print">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🔄</div>
+      QUẢN LÝ ĐỔI CA
+    </div>
+    <div class="clock" id="clock">00:00:00</div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- Left Column: Form -->
+    <div class="col-left">
+      <div class="panel">
+        <div class="panel-title">Tạo Đơn Đổi Ca</div>
+        <form id="frm">
+
+          <!-- Loại nhân sự -->
+          <div class="radio-tabs">
+            <div class="radio-tab">
+              <input type="radio" name="loai" id="r1" value="nhanvien" checked>
+              <label for="r1">👤 Nhân viên</label>
             </div>
-            <div class="clock" id="clock">00:00:00</div>
-        </header>
+            <div class="radio-tab">
+              <input type="radio" name="loai" id="r2" value="truongca">
+              <label for="r2">⭐ Trưởng ca</label>
+            </div>
+          </div>
 
-        <main class="main-content">
-            <section class="form-section glass-panel">
-                <h2>Tạo Đơn Đổi Ca</h2>
-                <form id="handoverForm">
-                    <div class="input-group">
-                        <label>Loại đơn:</label>
-                        <div style="display:flex; gap:0.8rem;">
-                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-color);font-size:1rem;margin-bottom:0;">
-                                <input type="radio" name="loai_don" id="radio_nhanvien" value="nhanvien" checked style="width:18px;height:18px;accent-color:var(--primary);padding:0;border:none;background:none;">
-                                👤 Nhân viên
-                            </label>
-                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-color);font-size:1rem;margin-bottom:0;">
-                                <input type="radio" name="loai_don" id="radio_truongca" value="truongca" style="width:18px;height:18px;accent-color:var(--primary);padding:0;border:none;background:none;">
-                                ⭐ Trưởng ca
-                            </label>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Người viết đơn (Họ tên):</label>
-                        <select id="inp_nguoi_xin" required>
-                            <option value="" disabled selected>-- Chọn tên --</option>
-                            <option>Nguyễn Phương</option>
-                            <option>Nguyễn Nhật Tiến</option>
-                            <option>Đoàn Văn Hạnh</option>
-                            <option>Nguyễn Minh Thảo</option>
-                            <option>Dương Đại Nghĩa</option>
-                            <option>Phan Quốc Nhật</option>
-                            <option>Nguyễn Minh Trung</option>
-                            <option>Nguyễn Thanh Thuận</option>
-                            <option>Võ Tấn Nghĩa</option>
-                            <option>Nguyễn Văn Hậu</option>
-                            <option>Võ Văn Hoài</option>
-                            <option>Nguyễn Quốc Thái</option>
-                            <option>Phạm Bá Quỳnh</option>
-                            <option>Trần Minh Tân</option>
-                            <option>Nguyễn Hoài Nam</option>
-                            <option>Hồ Trung Hiếu</option>
-                            <option>Đặng Thái Nguyên</option>
-                            <option>Phan Hoàng Thanh</option>
-                            <option>Hồng Mạnh Thái</option>
-                            <option>Bùi Văn Hùng</option>
-                            <option>Đặng Ngọc Hòa</option>
-                            <option>Nguyễn Thành Long</option>
-                            <option>Trần Hải Dương</option>
-                            <option>Ngụy Huỳnh Trung</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Người đổi ca thay thế (Họ tên):</label>
-                        <select id="inp_nguoi_doi" required>
-                            <option value="" disabled selected>-- Chọn tên --</option>
-                            <option>Nguyễn Phương</option>
-                            <option>Nguyễn Nhật Tiến</option>
-                            <option>Đoàn Văn Hạnh</option>
-                            <option>Nguyễn Minh Thảo</option>
-                            <option>Dương Đại Nghĩa</option>
-                            <option>Phan Quốc Nhật</option>
-                            <option>Nguyễn Minh Trung</option>
-                            <option>Nguyễn Thanh Thuận</option>
-                            <option>Võ Tấn Nghĩa</option>
-                            <option>Nguyễn Văn Hậu</option>
-                            <option>Võ Văn Hoài</option>
-                            <option>Nguyễn Quốc Thái</option>
-                            <option>Phạm Bá Quỳnh</option>
-                            <option>Trần Minh Tân</option>
-                            <option>Nguyễn Hoài Nam</option>
-                            <option>Hồ Trung Hiếu</option>
-                            <option>Đặng Thái Nguyên</option>
-                            <option>Phan Hoàng Thanh</option>
-                            <option>Hồng Mạnh Thái</option>
-                            <option>Bùi Văn Hùng</option>
-                            <option>Đặng Ngọc Hòa</option>
-                            <option>Nguyễn Thành Long</option>
-                            <option>Trần Hải Dương</option>
-                            <option>Ngụy Huỳnh Trung</option>
-                        </select>
-                    </div>
-                    
-                    <label style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">Ca Chuyển Đi <small>(Ca của bạn để lại)</small>:</label>
-                    <div class="row" style="margin-bottom: 1.2rem;">
-                        <div class="input-group half" style="margin-bottom:0;">
-                            <select id="sel_ca_di" required>
-                                <option value="" disabled selected>Chọn Ca trực</option>
-                                <option value="1">Ca 1</option>
-                                <option value="2">Ca 2</option>
-                                <option value="3">Ca 3</option>
-                                <option value="Hành chính">Ca Hành Chính</option>
-                            </select>
-                        </div>
-                        <div class="input-group half" style="margin-bottom:0;">
-                            <input type="date" id="date_di" required>
-                        </div>
-                    </div>
+          <!-- Người viết đơn -->
+          <div class="field">
+            <label>Người viết đơn</label>
+            <select id="nx" required>
+              <option value="" disabled selected>-- Chọn tên --</option>
+              <option>Nguyễn Phương</option>
+              <option>Nguyễn Nhật Tiến</option>
+              <option>Đoàn Văn Hạnh</option>
+              <option>Nguyễn Minh Thảo</option>
+              <option>Dương Đại Nghĩa</option>
+              <option>Phan Quốc Nhật</option>
+              <option>Nguyễn Minh Trung</option>
+              <option>Nguyễn Thanh Thuận</option>
+              <option>Võ Tấn Nghĩa</option>
+              <option>Nguyễn Văn Hậu</option>
+              <option>Võ Văn Hoài</option>
+              <option>Nguyễn Quốc Thái</option>
+              <option>Phạm Bá Quỳnh</option>
+              <option>Trần Minh Tân</option>
+              <option>Nguyễn Hoài Nam</option>
+              <option>Hồ Trung Hiếu</option>
+              <option>Đặng Thái Nguyên</option>
+              <option>Phan Hoàng Thanh</option>
+              <option>Hồng Mạnh Thái</option>
+              <option>Bùi Văn Hùng</option>
+              <option>Đặng Ngọc Hòa</option>
+              <option>Nguyễn Thành Long</option>
+              <option>Trần Hải Dương</option>
+              <option>Ngụy Huỳnh Trung</option>
+            </select>
+          </div>
 
-                    <label style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">Ca Nhận Về <small>(Ca trực bù lại)</small>:</label>
-                    <div class="row" style="margin-bottom: 1.2rem;">
-                        <div class="input-group half" style="margin-bottom:0;">
-                            <select id="sel_ca_ve" required>
-                                <option value="" disabled selected>Chọn Ca trực</option>
-                                <option value="1">Ca 1</option>
-                                <option value="2">Ca 2</option>
-                                <option value="3">Ca 3</option>
-                                <option value="Hành chính">Ca Hành Chính</option>
-                            </select>
-                        </div>
-                        <div class="input-group half" style="margin-bottom:0;">
-                            <input type="date" id="date_ve" required>
-                        </div>
-                    </div>
+          <!-- Người đổi ca -->
+          <div class="field">
+            <label>Người đổi ca thay thế</label>
+            <select id="nd" required>
+              <option value="" disabled selected>-- Chọn tên --</option>
+              <option>Nguyễn Phương</option>
+              <option>Nguyễn Nhật Tiến</option>
+              <option>Đoàn Văn Hạnh</option>
+              <option>Nguyễn Minh Thảo</option>
+              <option>Dương Đại Nghĩa</option>
+              <option>Phan Quốc Nhật</option>
+              <option>Nguyễn Minh Trung</option>
+              <option>Nguyễn Thanh Thuận</option>
+              <option>Võ Tấn Nghĩa</option>
+              <option>Nguyễn Văn Hậu</option>
+              <option>Võ Văn Hoài</option>
+              <option>Nguyễn Quốc Thái</option>
+              <option>Phạm Bá Quỳnh</option>
+              <option>Trần Minh Tân</option>
+              <option>Nguyễn Hoài Nam</option>
+              <option>Hồ Trung Hiếu</option>
+              <option>Đặng Thái Nguyên</option>
+              <option>Phan Hoàng Thanh</option>
+              <option>Hồng Mạnh Thái</option>
+              <option>Bùi Văn Hùng</option>
+              <option>Đặng Ngọc Hòa</option>
+              <option>Nguyễn Thành Long</option>
+              <option>Trần Hải Dương</option>
+              <option>Ngụy Huỳnh Trung</option>
+            </select>
+          </div>
 
-                    <div class="row">
-                        <div class="input-group half">
-                            <label>Số lần đã đổi ca trong tháng:</label>
-                            <input type="number" id="inp_so_lan" required placeholder="VD: 1" min="1">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Lý do (Nội dung chi tiết):</label>
-                        <textarea id="inp_ly_do" required placeholder="Lý do xin đổi ca..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" id="btnPrintPreview" class="btn btn-secondary">📄 Tải Word</button>
-                        <button type="button" id="btnPrint" class="btn btn-secondary" style="background:#7c3aed;">🖨️ In Đơn</button>
-                        <button type="submit" class="btn btn-primary">💾 Lưu</button>
-                    </div>
-                </form>
-            </section>
+          <!-- Ca chuyển đi -->
+          <div class="sec-label">Ca Chuyển Đi — Ca của bạn để lại</div>
+          <div class="row2">
+            <div class="field">
+              <select id="cdi" required>
+                <option value="" disabled selected>Chọn ca</option>
+                <option value="Ca 1">Ca 1</option>
+                <option value="Ca 2">Ca 2</option>
+                <option value="Ca 3">Ca 3</option>
+                <option value="Ca Hành chính">Hành Chính</option>
+              </select>
+            </div>
+            <div class="field">
+              <input type="date" id="ddi" required>
+            </div>
+          </div>
 
-            <section class="list-section glass-panel">
-                <h2>Lịch Sử Các Đơn Đã Lưu</h2>
-                <div class="table-container">
-                    <table id="dataTable">
-                        <thead>
-                            <tr>
-                                <th>Ngày tạo</th>
-                                <th>Người xin đổi</th>
-                                <th>Người trực thay</th>
-                                <th>Chi tiết Ca chuyển / Ca nhận</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataBody">
-                            <!-- Dữ liệu server render ra đây -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+          <!-- Ca nhận về -->
+          <div class="sec-label">Ca Nhận Về — Ca trực bù lại</div>
+          <div class="row2">
+            <div class="field">
+              <select id="cve" required>
+                <option value="" disabled selected>Chọn ca</option>
+                <option value="Ca 1">Ca 1</option>
+                <option value="Ca 2">Ca 2</option>
+                <option value="Ca 3">Ca 3</option>
+                <option value="Ca Hành chính">Hành Chính</option>
+              </select>
+            </div>
+            <div class="field">
+              <input type="date" id="dve" required>
+            </div>
+          </div>
+
+          <!-- Số lần & Lý do -->
+          <div class="field">
+            <label>Số lần đã đổi ca trong tháng</label>
+            <input type="number" id="sl" required placeholder="VD: 1" min="1">
+          </div>
+          <div class="field">
+            <label>Lý do</label>
+            <textarea id="ld" required placeholder="Lý do xin đổi ca..."></textarea>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="btn-row">
+            <button type="button" id="btnWord" class="btn btn-word">📄 Word</button>
+            <button type="button" id="btnPrint" class="btn btn-print">🖨️ In</button>
+            <button type="submit" class="btn btn-save">💾 Lưu</button>
+          </div>
+
+        </form>
+      </div>
     </div>
 
-    <!-- KHU VỰC IN ẨN (CHỈ HIỂN THỊ KHI bấm IN) - Đảm bảo chuẩn format hành chính -->
-    <div id="printArea" class="print-area">
-        <div class="print-header">
-            <b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br>
-            <span class="underline">Độc lập – Tự do – Hạnh phúc</span>
+    <!-- Right Column: History Table -->
+    <div class="col-right">
+      <div class="panel">
+        <div class="panel-title">Lịch Sử Đơn Đã Lưu</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày tạo</th>
+                <th>Người xin đổi</th>
+                <th>Người trực thay</th>
+                <th>Chi tiết ca</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="5" class="empty">Đang tải...</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="print-date">
-            <i>TP . Hồ Chí Minh, ngày <span id="p_ngay">...</span> tháng <span id="p_thang">...</span> năm <span id="p_nam">...</span>.</i>
-        </div>
-        
-        <h1 class="print-title">ĐƠN XIN ĐỔI CA LÀM VIỆC</h1>
-        
-        <div class="print-kto">
-            <b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.
-        </div>
-        
-        <div class="print-content">
-            <p>Tôi tên là <span id="p_nguoi_xin">................................................................</span>, <span id="p_chuc_danh">nhân viên</span> Đội Vận hành, bảo trì đường hầm.</p>
-            <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông <span id="p_nguoi_doi">........................................................................</span></p>
-            <p>Ca <span id="p_ca_1">........................................</span>, ông <span id="p_nguoi_doi_2">........................................</span> sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
-            <p>Ca <span id="p_ca_2">........................................</span>, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông <span id="p_nguoi_doi_3">........................................</span></p>
-            <p>Số lần đã đổi ca trong tháng: <span id="p_so_lan">.........</span></p>
-            <p>Lý do: <span id="p_ly_do">....................................................................................................................................................................</span></p>
-            <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
-            <p>Trân trọng cảm ơn.</p>
-        </div>
-        
-        <!-- Bảng ký tên đúng mẫu: 3 cột -->
-        <table style="width:100%;text-align:center;margin-top:20px;border-collapse:collapse;border:none;">
-            <tr>
-                <td style="width:33%;vertical-align:top;border:none;padding:0 5px;"><b>Người đổi</b></td>
-                <td style="width:34%;vertical-align:top;border:none;padding:0 5px;"><b>Đội trưởng</b></td>
-                <td style="width:33%;vertical-align:top;border:none;padding:0 5px;"><b>Người viết đơn</b></td>
-            </tr>
-            <tr><td style="border:none;height:70px;"></td><td style="border:none;"></td><td style="border:none;"></td></tr>
-            <tr>
-                <td style="border:none;padding:0 5px;" id="p_nguoi_doi_ky">............................</td>
-                <td style="border:none;padding:0 5px;"><b>Nguyễn Văn Trung</b></td>
-                <td style="border:none;padding:0 5px;" id="p_nguoi_xin_ky">............................</td>
-            </tr>
-        </table>
+      </div>
     </div>
 
-    <!-- JSZip: đóng gói file .docx (ZIP) — CDN rất ổn định tại VN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="script.js"></script>
+  </div><!-- /.main -->
+</div><!-- /.no-print -->
+
+
+<!-- ===== PRINT AREA (visible only when printing) ===== -->
+<div id="pA" class="print-area">
+  <div class="ph">
+    <b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br>
+    <span class="ul">Độc lập – Tự do – Hạnh phúc</span>
+  </div>
+  <div class="pd">
+    <i>TP. Hồ Chí Minh, ngày <span id="p_ng"></span> tháng <span id="p_th"></span> năm <span id="p_na"></span>.</i>
+  </div>
+  <div class="pt">ĐƠN XIN ĐỔI CA LÀM VIỆC</div>
+  <div class="pkg"><b>Kính gửi:</b> Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
+  <div class="pc">
+    <p>Tôi tên là: <span id="p_nx"></span>, <span id="p_cd">nhân viên</span> Đội Vận hành, bảo trì đường hầm.</p>
+    <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông <span id="p_nd"></span>.</p>
+    <p>Ca <span id="p_c1"></span>, ông <span id="p_nd2"></span> sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
+    <p>Ca <span id="p_c2"></span>, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông <span id="p_nd3"></span>.</p>
+    <p>Số lần đã đổi ca trong tháng: <span id="p_sl"></span>.</p>
+    <p>Lý do: <span id="p_ld"></span>.</p>
+    <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
+    <p>Trân trọng cảm ơn.</p>
+  </div>
+  <div class="sig-wrap">
+    <div class="sig-row">
+      <div class="sig-box">
+        <span>Người đổi</span>
+        <span class="sig-name" id="p_ndk"></span>
+      </div>
+      <div class="sig-box">
+        <span>Người viết đơn</span>
+        <span class="sig-name" id="p_nxk"></span>
+      </div>
+    </div>
+    <div class="sig-mid">
+      <div>
+        <span>Đội trưởng</span>
+        <span class="sig-mid-name">Nguyễn Văn Trung</span>
+      </div>
+    </div>
+  </div>
+</div><!-- /.print-area -->
+
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>
