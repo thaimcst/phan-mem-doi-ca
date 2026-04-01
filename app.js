@@ -58,6 +58,15 @@ function bind() {
   // Người đổi 1
   ['p_nd', 'p_nd2p', 'p_nd3p'].forEach(id => document.getElementById(id).textContent = nd);
 
+  // "và ông X" khi có người đổi 2
+  const andSpan = document.getElementById('p_nd_and2');
+  if (has2) {
+    const nd2val = document.getElementById('nd2').value;
+    andSpan.textContent = nd2val ? ' và ông ' + nd2val : '';
+  } else {
+    andSpan.textContent = '';
+  }
+
   const cdi = document.getElementById('cdi').value;
   const ddi = document.getElementById('ddi').value;
   const cve = document.getElementById('cve').value;
@@ -77,7 +86,7 @@ function bind() {
     const cve2 = document.getElementById('cve2').value;
     const dve2 = document.getElementById('dve2').value;
 
-    ['p_nd_b', 'p_nd2_b', 'p_nd3_b'].forEach(id => document.getElementById(id).textContent = nd2);
+    ['p_nd2_b', 'p_nd3_b'].forEach(id => document.getElementById(id).textContent = nd2);
     document.getElementById('p_c1_b').textContent = (cdi2 && ddi2) ? cdi2 + ' ngày ' + fd(ddi2) : dotsCa;
     document.getElementById('p_c2_b').textContent = (cve2 && dve2) ? cve2 + ' ngày ' + fd(dve2) : dotsCa;
 
@@ -326,13 +335,15 @@ async function expDocx(d, fn) {
     para([{ t: 'Kính gửi: ', bold: true }, { t: 'Đội trưởng Đội Vận hành, bảo trì đường hầm.' }], { jc: 'center' }) +
     el() +
     para([{ t: 'Tôi tên là: ' }, { t: d.nx }, { t: ', ' + cd + ' Đội Vận hành, bảo trì đường hầm.' }], { ind: true }) +
-    para([{ t: 'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ' }, { t: d.nd }, { t: '.' }], { ind: true }) +
+    (has2
+      ? para([{ t: 'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ' }, { t: d.nd }, { t: ' và ông ' }, { t: d.nd2 }, { t: '.' }], { ind: true })
+      : para([{ t: 'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ' }, { t: d.nd }, { t: '.' }], { ind: true })
+    ) +
     para([{ t: d.cdi }, { t: ', ông ' }, { t: d.nd }, { t: ' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.' }], { ind: true }) +
     para([{ t: d.cve }, { t: ', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ' }, { t: d.nd }, { t: '.' }], { ind: true });
 
   if (has2) {
     bodyParas +=
-      para([{ t: 'Ngoài ra, tôi cũng xin đổi ca với ông ' }, { t: d.nd2 }, { t: '.' }], { ind: true }) +
       para([{ t: d.cdi2 }, { t: ', ông ' }, { t: d.nd2 }, { t: ' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.' }], { ind: true }) +
       para([{ t: d.cve2 }, { t: ', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ' }, { t: d.nd2 }, { t: '.' }], { ind: true });
   }
