@@ -7,6 +7,11 @@ window.rec = [];
 // ===== CLOCK =====
 function updateClock() {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('vi-VN');
+  const db = document.getElementById('dateBadge');
+  if (db) {
+    const now = new Date();
+    db.textContent = now.toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
+  }
 }
 updateClock();
 setInterval(updateClock, 1000);
