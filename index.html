@@ -128,7 +128,7 @@
 
                     <div class="row">
                         <div class="input-group half">
-                            <label>Số lần xin đổi ca trong tháng:</label>
+                            <label>Số lần đã đổi ca trong tháng:</label>
                             <input type="number" id="inp_so_lan" required placeholder="VD: 1" min="1">
                         </div>
                     </div>
@@ -138,8 +138,9 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" id="btnPrintPreview" class="btn btn-secondary">📄 Tải Form Word</button>
-                        <button type="submit" class="btn btn-primary">💾 Lưu Lịch Sử Đơn</button>
+                        <button type="button" id="btnPrintPreview" class="btn btn-secondary">📄 Tải Word</button>
+                        <button type="button" id="btnPrint" class="btn btn-secondary" style="background:#7c3aed;">🖨️ In Đơn</button>
+                        <button type="submit" class="btn btn-primary">💾 Lưu</button>
                     </div>
                 </form>
             </section>
@@ -183,36 +184,28 @@
         </div>
         
         <div class="print-content">
-            <p>Tôi tên là: <span id="p_nguoi_xin">................................................................</span>, nhân viên Đội Vận hành, bảo trì đường hầm.</p>
+            <p>Tôi tên là <span id="p_nguoi_xin">................................................................</span>, <span id="p_chuc_danh">nhân viên</span> Đội Vận hành, bảo trì đường hầm.</p>
             <p>Nay tôi viết đơn này xin phép cho tôi đổi ca với ông <span id="p_nguoi_doi">........................................................................</span></p>
             <p>Ca <span id="p_ca_1">........................................</span>, ông <span id="p_nguoi_doi_2">........................................</span> sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.</p>
             <p>Ca <span id="p_ca_2">........................................</span>, tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông <span id="p_nguoi_doi_3">........................................</span></p>
-            <p>Số lần xin đổi ca trong tháng: <span id="p_so_lan">.........</span></p>
+            <p>Số lần đã đổi ca trong tháng: <span id="p_so_lan">.........</span></p>
             <p>Lý do: <span id="p_ly_do">....................................................................................................................................................................</span></p>
             <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
             <p>Trân trọng cảm ơn.</p>
         </div>
         
-        <!-- Hàng 1: Người đổi (trái) | Người viết đơn (phải) -->
-        <table style="width: 100%; text-align: center; margin-top: 30px; border-collapse: collapse; border: none;">
+        <!-- Bảng ký tên đúng mẫu: 3 cột -->
+        <table style="width:100%;text-align:center;margin-top:20px;border-collapse:collapse;border:none;">
             <tr>
-                <td style="width: 50%; vertical-align: top; border: none; padding: 0 10px;">
-                    <b>Người đổi</b><br><br><br><br><br>
-                    <b id="p_nguoi_doi_ky">............................</b>
-                </td>
-                <td style="width: 50%; vertical-align: top; border: none; padding: 0 10px;">
-                    <b>Người viết đơn</b><br><br><br><br><br>
-                    <b id="p_nguoi_xin_ky">............................</b>
-                </td>
+                <td style="width:33%;vertical-align:top;border:none;padding:0 5px;"><b>Người đổi</b></td>
+                <td style="width:34%;vertical-align:top;border:none;padding:0 5px;"><b>Đội trưởng</b></td>
+                <td style="width:33%;vertical-align:top;border:none;padding:0 5px;"><b>Người viết đơn</b></td>
             </tr>
-        </table>
-        <!-- Hàng 2: Đội trưởng (giữa) -->
-        <table style="width: 100%; text-align: center; margin-top: 30px; border-collapse: collapse; border: none;">
+            <tr><td style="border:none;height:70px;"></td><td style="border:none;"></td><td style="border:none;"></td></tr>
             <tr>
-                <td style="border: none; padding: 0;">
-                    <b>Đội trưởng</b><br><br><br><br><br>
-                    <b>Nguyễn Văn Trung</b>
-                </td>
+                <td style="border:none;padding:0 5px;" id="p_nguoi_doi_ky">............................</td>
+                <td style="border:none;padding:0 5px;"><b>Nguyễn Văn Trung</b></td>
+                <td style="border:none;padding:0 5px;" id="p_nguoi_xin_ky">............................</td>
             </tr>
         </table>
     </div>

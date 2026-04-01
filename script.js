@@ -107,8 +107,14 @@ document.querySelectorAll('input, select, textarea').forEach(function(el) {
 });
 
 // =============================================
-// 5. NÚT TẢI WORD TỪ FORM
+// NÚT IN ĐƠN
 // =============================================
+document.getElementById('btnPrint').addEventListener('click', function() {
+    bindPrintData();
+    window.print();
+});
+
+
 document.getElementById('btnPrintPreview').addEventListener('click', function() {
     bindPrintData();
     var now = new Date();
@@ -262,61 +268,44 @@ async function exportDocx(d, filename) {
     }
 
 
-    // Chiều rộng cho bảng 2 cột (hàng 1) và bảng 1 cột giữa (hàng Đội trưởng)
-    // Tổng trang = 9026 dxa (A4 trừ lề)
-    var HALF = 4513; // 9026 / 2
-
-    // Hàng trống cho bảng 2 cột
-    function emptyRow2() {
-        return '<w:tr>' + cell(emptyLine(), HALF) + cell(emptyLine(), HALF) + '</w:tr>';
+    // Bảng ký tên đúng mẫu: 3 cột
+    // Cột 1: Người đổi (trái) | Cột 2: Đội trưởng (giữa) | Cột 3: Người viết đơn (phải)
+    // Hàng 1: tiêu đề 3 cột
+    // Hàng 2-4: trống (khoảng ký)
+    // Hàng 5: tên người đổi | Nguyễn Văn Trung (bold) | tên người viết
+    var W1 = 3000, W2 = 3026, W3 = 3000;
+    var tb3 = '<w:tblBorders>' +
+        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
+        '</w:tblBorders>';
+    function emptyRow3() {
+        return '<w:tr>' + cell(emptyLine(),W1) + cell(emptyLine(),W2) + cell(emptyLine(),W3) + '</w:tr>';
     }
-
-    // Bảng hàng 1: Người đổi (trái) | Người viết đơn (phải)
     var sigTable =
-        // ---- HÀNG 1: Người đổi | Người viết đơn ----
         '<w:tbl>' +
-        '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
-        '<w:tblBorders>' +
-        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '</w:tblBorders></w:tblPr>' +
-        '<w:tblGrid><w:gridCol w:w="' + HALF + '"/><w:gridCol w:w="' + HALF + '"/></w:tblGrid>' +
-        // Tiêu đề
+        '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' + tb3 + '</w:tblPr>' +
+        '<w:tblGrid><w:gridCol w:w="'+W1+'"/><w:gridCol w:w="'+W2+'"/><w:gridCol w:w="'+W3+'"/></w:tblGrid>' +
+        // Hàng tiêu đề
         '<w:tr>' +
-            cell(centerPara([{text:'Người đổi', bold:true}]), HALF) +
-            cell(centerPara([{text:'Người viết đơn', bold:true}]), HALF) +
+            cell(centerPara([{text:'Người đổi', bold:true}]), W1) +
+            cell(centerPara([{text:'Đội trưởng', bold:true}]), W2) +
+            cell(centerPara([{text:'Người viết đơn', bold:true}]), W3) +
         '</w:tr>' +
-        // Khoảng trắng để ký
-        emptyRow2() + emptyRow2() +
-        // Tên ký
+        // Khoảng trống ký tên
+        emptyRow3() + emptyRow3() + emptyRow3() +
+        // Hàng tên
         '<w:tr>' +
-            cell(centerPara([{text: cleanName(d.nguoiDoi), bold:true}]), HALF) +
-            cell(centerPara([{text: cleanName(d.nguoiXin), bold:true}]), HALF) +
+            cell(centerPara([{text: cleanName(d.nguoiDoi)}]), W1) +
+            cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), W2) +
+            cell(centerPara([{text: cleanName(d.nguoiXin)}]), W3) +
         '</w:tr>' +
-        '</w:tbl>' +
-        '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr></w:p>' +
-        // ---- HÀNG 2: Đội trưởng (giữa) ----
-        '<w:tbl>' +
-        '<w:tblPr><w:tblW w:w="9026" w:type="dxa"/>' +
-        '<w:tblBorders>' +
-        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>' +
-        '</w:tblBorders></w:tblPr>' +
-        '<w:tblGrid><w:gridCol w:w="9026"/></w:tblGrid>' +
-        '<w:tr>' + cell(centerPara([{text:'Đội trưởng', bold:true}]), 9026) + '</w:tr>' +
-        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
-        '<w:tr>' + cell(emptyLine(), 9026) + '</w:tr>' +
-        '<w:tr>' + cell(centerPara([{text:'Nguyễn Văn Trung', bold:true}]), 9026) + '</w:tr>' +
         '</w:tbl>';
 
+    var chucDanh = d.loai === 'truongca' ? 'trưởng ca' : 'nhân viên';
     var body =
         para([{text:'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold:true}], {align:'center'}) +
         para([{text:'Độc lập – Tự do – Hạnh phúc', bold:true, underline:true}], {align:'center'}) +
@@ -326,12 +315,12 @@ async function exportDocx(d, filename) {
         emptyLine() +
         para([{text:'Kính gửi: ', bold:true}, {text:'Đội trưởng Đội Vận hành, bảo trì đường hầm.'}], {align:'center'}) +
         emptyLine() +
-        para([{text:'Tôi tên là: '}, {text:d.nguoiXin, bold:true}, {text:', ' + (d.loai === 'truongca' ? 'trưởng ca' : 'nhân viên') + ' Đội Vận hành, bảo trì đường hầm.'}], {indent:true}) +
-        para([{text:'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +
-        para([{text:'Ca '}, {text:d.caDi, bold:true}, {text:', ông '}, {text:d.nguoiDoi, bold:true}, {text:' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.'}], {indent:true}) +
-        para([{text:'Ca '}, {text:d.caVe, bold:true}, {text:', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông '}, {text:d.nguoiDoi, bold:true}, {text:'.'}], {indent:true}) +
-        para([{text:'Số lần xin đổi ca trong tháng: '}, {text:d.soLan, bold:true}, {text:'.'}], {indent:true}) +
-        para([{text:'Lý do: '}, {text:d.lyDo}], {indent:true}) +
+        para([{text:'Tôi tên là ' + d.nguoiXin + ', ' + chucDanh + ' Đội Vận hành, bảo trì đường hầm.'}], {indent:true}) +
+        para([{text:'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ' + d.nguoiDoi + '.'}], {indent:true}) +
+        para([{text:'Ca ' + d.caDi + ', ông ' + d.nguoiDoi + ' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.'}], {indent:true}) +
+        para([{text:'Ca ' + d.caVe + ', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ' + d.nguoiDoi + '.'}], {indent:true}) +
+        para([{text:'Số lần đã đổi ca trong tháng: ' + d.soLan + '.'}], {indent:true}) +
+        para([{text:'Lý do: ' + d.lyDo}], {indent:true}) +
         emptyLine() +
         para([{text:'Rất mong được sự chấp thuận của Đội trưởng.'}], {indent:true}) +
         para([{text:'Trân trọng cảm ơn.'}], {indent:true}) +
