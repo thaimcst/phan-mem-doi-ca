@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Đổi Ca</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="no-print">
   <header class="header">
-    <div class="logo"><div class="logo-icon">🔄</div>QUẢN LÝ ĐỔI CA</div>
+    <div class="logo"><div class="logo-icon">🔄</div><span>QUẢN LÝ ĐỔI CA</span></div>
     <div class="clock" id="clock">00:00:00</div>
   </header>
   <div class="main">
@@ -93,6 +93,11 @@
     <div class="col-right">
       <div class="panel">
         <div class="panel-title">Lịch Sử Đơn Đã Lưu</div>
+        <div class="stats-strip">
+          <div class="stat-pill"><div class="num" id="stat-total">0</div><div class="lbl">Tổng đơn</div></div>
+          <div class="stat-pill"><div class="num" id="stat-month">0</div><div class="lbl">Tháng này</div></div>
+          <div class="stat-pill"><div class="num" id="stat-today">0</div><div class="lbl">Hôm nay</div></div>
+        </div>
         <div class="table-wrap">
           <table><thead><tr><th>Ngày tạo</th><th>Người xin đổi</th><th>Người trực thay</th><th>Chi tiết ca</th><th>Thao tác</th></tr></thead>
           <tbody id="tbody"><tr><td colspan="5" class="empty">Đang tải...</td></tr></tbody></table>

@@ -193,6 +193,14 @@ async function load() {
     if (d && typeof d === 'object') { for (let k in d) a.push({ id: k, ...d[k] }); }
     a.sort((x, y) => new Date(y.createdAt || 0) - new Date(x.createdAt || 0));
     window.rec = a;
+
+    // Update stats
+    const now2 = new Date();
+    const thisMonth = a.filter(i => { const d = new Date(i.createdAt); return d.getMonth() === now2.getMonth() && d.getFullYear() === now2.getFullYear(); });
+    const today = a.filter(i => { const d = new Date(i.createdAt); return d.toDateString() === now2.toDateString(); });
+    document.getElementById('stat-total').textContent = a.length;
+    document.getElementById('stat-month').textContent = thisMonth.length;
+    document.getElementById('stat-today').textContent = today.length;
     const tb = document.getElementById('tbody');
     if (!a.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Chưa có đơn nào</td></tr>'; return; }
     tb.innerHTML = '';
