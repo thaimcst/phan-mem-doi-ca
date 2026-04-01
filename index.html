@@ -3,26 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Lý Đổi Ca — Đội Vận Hành Đường Hầm</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+  <title>Quản Lý Đổi Ca | UTMC — Đường Hầm TP.HCM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Floating orbs -->
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
+<!-- Decorative elements -->
+<div class="light-trail"></div>
+<div class="scanlines"></div>
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
 
 <div class="no-print">
 
   <!-- ── HEADER ── -->
   <header class="header">
     <div class="logo">
-      <div class="logo-icon">🔄</div>
-      <div>
-        <div class="logo-text">QUẢN LÝ ĐỔI CA</div>
-        <div class="logo-sub">Đội Vận Hành · Bảo Trì Đường Hầm</div>
+      <div class="logo-emblem">
+        <div class="logo-emblem-inner">🚇</div>
+      </div>
+      <div class="logo-info">
+        <div class="logo-main">UTMC · Đường Hầm</div>
+        <div class="logo-sub">Trung Tâm Quản Lý Điều Hành Giao Thông</div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="sys-status">
+        <div class="status-dot"></div>
+        HỆ THỐNG HOẠT ĐỘNG
       </div>
     </div>
     <div class="header-right">
@@ -31,11 +42,13 @@
     </div>
   </header>
 
-  <!-- ── HERO ── -->
+  <!-- ── HERO STRIP ── -->
   <div class="hero">
-    <div>
-      <div class="hero-title">Quản Lý Đổi Ca</div>
-      <div class="hero-sub">Tạo, lưu và xuất đơn xin đổi ca nhanh chóng</div>
+    <div class="hero-left">
+      <div class="hero-breadcrumb">
+        UTMC <span>›</span> Vận Hành <span>›</span> Đổi Ca
+      </div>
+      <div class="hero-title">QUẢN LÝ ĐỔI CA</div>
     </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-num" id="stat-total">—</div><div class="hstat-lbl">Tổng đơn</div></div>
@@ -51,23 +64,21 @@
     <div class="col-left">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-bar"></div>Tạo Đơn Đổi Ca</div>
+          <div class="panel-title"><div class="panel-title-icon"></div>TẠO ĐƠN ĐỔI CA</div>
+          <div class="panel-tag">FORM</div>
         </div>
+        <div class="panel-inner">
         <form id="frm">
-
-          <!-- Loại -->
           <div class="radio-tabs">
             <div class="radio-tab"><input type="radio" name="loai" id="r1" value="nhanvien" checked><label for="r1">👤 Nhân viên</label></div>
             <div class="radio-tab"><input type="radio" name="loai" id="r2" value="truongca"><label for="r2">⭐ Trưởng ca</label></div>
           </div>
 
-          <!-- Người viết đơn -->
           <div class="field"><label>Người viết đơn</label>
             <select id="nx" required><option value="" disabled selected>— Chọn tên —</option>
               <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
             </select></div>
 
-          <!-- Người đổi 1 -->
           <div class="person-block pb-1">
             <div class="person-block-accent"></div>
             <div class="sec-label person-label-1"><div class="sec-label-dot"></div>Người đổi thứ nhất</div>
@@ -87,15 +98,13 @@
             </div>
           </div>
 
-          <!-- Toggle -->
           <div class="toggle-wrap">
             <label class="toggle-label">
               <input type="checkbox" id="chk2">
-              <span class="toggle-btn">➕ Thêm người đổi thứ hai</span>
+              <span class="toggle-btn">＋ THÊM NGƯỜI ĐỔI THỨ HAI</span>
             </label>
           </div>
 
-          <!-- Người đổi 2 -->
           <div class="person-block" id="block2" style="display:none">
             <div class="person-block-accent"></div>
             <div class="sec-label person-label-2"><div class="sec-label-dot"></div>Người đổi thứ hai</div>
@@ -115,40 +124,44 @@
             </div>
           </div>
 
-          <!-- Số lần & Lý do -->
-          <div class="field" style="margin-top:1rem">
+          <div class="field" style="margin-top:.9rem">
             <label>Số lần đổi ca trong tháng</label>
             <input type="number" id="sl" required placeholder="VD: 1" min="1">
           </div>
           <div class="field">
-            <label>Lý do xin đổi ca</label>
-            <textarea id="ld" required placeholder="Nhập lý do..."></textarea>
+            <label>Lý do</label>
+            <textarea id="ld" required placeholder="Nhập lý do xin đổi ca..."></textarea>
           </div>
-
           <div class="btn-row">
-            <button type="button" id="btnWord" class="btn btn-word">📄 Word</button>
-            <button type="button" id="btnPrint" class="btn btn-print">🖨️ In</button>
-            <button type="submit" class="btn btn-save">💾 Lưu đơn</button>
+            <button type="button" id="btnWord" class="btn btn-word">📄 WORD</button>
+            <button type="button" id="btnPrint" class="btn btn-print">🖨 IN</button>
+            <button type="submit" class="btn btn-save">💾 LƯU ĐƠN</button>
           </div>
         </form>
+        </div>
       </div>
     </div>
 
-    <!-- Right: History -->
+    <!-- Right: Table -->
     <div class="col-right">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-bar"></div>Lịch Sử Đơn Đã Lưu</div>
+          <div class="panel-title"><div class="panel-title-icon"></div>LỊCH SỬ ĐƠN ĐÃ LƯU</div>
+          <div class="panel-tag">DATABASE</div>
         </div>
         <div class="table-wrap">
-          <table><thead><tr>
-            <th>Ngày tạo</th>
-            <th>Người xin đổi</th>
-            <th>Người trực thay</th>
-            <th>Chi tiết ca</th>
-            <th>Thao tác</th>
-          </tr></thead>
-          <tbody id="tbody"><tr><td colspan="5" class="empty">⏳ Đang tải dữ liệu...</td></tr></tbody></table>
+          <table>
+            <thead><tr>
+              <th>Ngày tạo</th>
+              <th>Người xin đổi</th>
+              <th>Người trực thay</th>
+              <th>Chi tiết ca</th>
+              <th>Thao tác</th>
+            </tr></thead>
+            <tbody id="tbody">
+              <tr><td colspan="5" class="empty">⏳ ĐANG TẢI DỮ LIỆU...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
