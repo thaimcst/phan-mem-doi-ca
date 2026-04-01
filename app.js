@@ -319,30 +319,45 @@ document.getElementById('btnPrint').onclick = () => {
 };
 
 // ===== EXPORT PDF =====
-document.getElementById('btnPdf').onclick = async () => {
+document.getElementById('btnPdf').onclick = () => {
   bind();
-  if (typeof html2pdf === 'undefined') { alert('Thư viện PDF chưa tải, vui lòng thử lại!'); return; }
-  const btn = document.getElementById('btnPdf');
-  btn.textContent = '⏳ Đang tạo...';
-  btn.disabled = true;
-  try {
-    const d = collectFormData();
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'font-family:Times New Roman,Times,serif;font-size:13pt;line-height:1.6;color:#000;background:#fff;padding:0;width:170mm';
-    wrapper.innerHTML = `<style>${DON_CSS}</style>` + buildDonHTML(d);
-    document.body.appendChild(wrapper);
-    const filename = 'Don_Doi_Ca_' + tc(d.nx||'Moi').replace(/ /g,'_') + '.pdf';
-    await html2pdf().set({
-      margin: [20, 18, 20, 25],
-      filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(wrapper).save();
-    document.body.removeChild(wrapper);
-  } catch(e) { alert('Lỗi tạo PDF: ' + e.message); }
-  btn.textContent = '📑 PDF';
-  btn.disabled = false;
+  const d = collectFormData();
+  const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+    <title>Don_Doi_Ca_${tc(d.nx||'Moi').replace(/ /g,'_')}</title>
+    <style>
+      @page { size: A4; margin: 20mm 18mm 20mm 25mm; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.6; color: #000; background: #fff; }
+      .ph { text-align: center; margin-bottom: 2px; }
+      .ul { font-weight: bold; text-decoration: underline; }
+      .pd { text-align: right; margin: 4px 0 14px; font-style: italic; font-size: 12pt; }
+      .pt { text-align: center; font-size: 15pt; font-weight: bold; margin: 10px 0; }
+      .pkg { text-align: center; margin-bottom: 14px; font-size: 12pt; }
+      .pc p { text-indent: 10mm; margin-bottom: 3px; text-align: justify; font-size: 12pt; }
+      .sig-tbl { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .sig-tbl td { text-align: center; font-size: 12pt; padding: 0; border: none; }
+      .sig-space td { height: 14px; }
+    </style>
+  </head><body>
+    ${buildDonHTML(d)}
+    <script>
+      window.onload = function() {
+        document.title = 'Don_Doi_Ca_${tc(d.nx||'Moi').replace(/ /g,'_')}';
+        window.print();
+        window.onafterprint = function() { window.close(); };
+      };
+    <\/script>
+  </body></html>`;
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if (!w) { alert('Trình duyệt đã chặn popup. Vui lòng cho phép popup cho trang này!'); return; }
+  w.document.write(html);
+  w.document.close();
+  // Hướng dẫn lưu PDF
+  setTimeout(() => {
+    if (w && !w.closed) {
+      alert('💡 Để lưu PDF:\n• Trong hộp thoại in → Chọn "Save as PDF" (hoặc "Microsoft Print to PDF")\n• Nhấn Save/Lưu');
+    }
+  }, 800);
 };
 document.getElementById('btnWord').onclick = () => {
   bind();
