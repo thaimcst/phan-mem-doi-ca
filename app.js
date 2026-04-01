@@ -149,6 +149,7 @@ document.getElementById('frm').addEventListener('submit', async function (e) {
     nguoiDoi: document.getElementById('nd').value,
     caDi: document.getElementById('cdi').value + ' ngày ' + fd(document.getElementById('ddi').value),
     caVe: document.getElementById('cve').value + ' ngày ' + fd(document.getElementById('dve').value),
+    // Note: option values already include 'Ca 1', 'Ca 2', etc.
     soLan: document.getElementById('sl').value,
     lyDo: document.getElementById('ld').value,
     loai: document.querySelector('input[name="loai"]:checked').value,
@@ -281,8 +282,8 @@ async function expDocx(d, fn) {
     el() +
     para([{ t: 'Tôi tên là: ' }, { t: d.nx }, { t: ', ' + cd + ' Đội Vận hành, bảo trì đường hầm.' }], { ind: true }) +
     para([{ t: 'Nay tôi viết đơn này xin phép cho tôi đổi ca với ông ' }, { t: d.nd }, { t: '.' }], { ind: true }) +
-    para([{ t: 'Ca ' }, { t: d.cdi }, { t: ', ông ' }, { t: d.nd }, { t: ' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.' }], { ind: true }) +
-    para([{ t: 'Ca ' }, { t: d.cve }, { t: ', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ' }, { t: d.nd }, { t: '.' }], { ind: true }) +
+    para([{ t: d.cdi }, { t: ', ông ' }, { t: d.nd }, { t: ' sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của tôi.' }], { ind: true }) +
+    para([{ t: d.cve }, { t: ', tôi sẽ chịu trách nhiệm hoàn toàn vào ca làm việc của ông ' }, { t: d.nd }, { t: '.' }], { ind: true }) +
     para([{ t: 'Số lần đã đổi ca trong tháng: ' }, { t: d.sl }, { t: '.' }], { ind: true }) +
     para([{ t: 'Lý do: ' }, { t: d.ld }], { ind: true }) +
     el() +
