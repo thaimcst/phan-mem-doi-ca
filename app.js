@@ -2,6 +2,221 @@
 const API = 'https://phan-d-default-rtdb.asia-southeast1.firebasedatabase.app/don_doi_ca';
 const GIOI_HAN_THANG = 4;
 
+// ===== LỊCH KÍP VẬN HÀNH =====
+// Load từ file lich_kip.json
+let LICH_KIP = null;
+fetch('lich_kip.json')
+  .then(r => r.json())
+  .then(data => {
+    LICH_KIP = data;
+    console.log('✅ Đã tải lịch kíp:', Object.keys(data).length, 'nhân viên');
+    // Cập nhật gợi ý nếu form đã có giá trị
+    capNhatGoiY();
+  })
+  .catch(e => console.warn('⚠️ Không tải được lịch kíp:', e));
+
+// Lấy ca làm việc của một người trong ngày
+function getCaNgay(tenNguoi, dateStr) {
+  if (!LICH_KIP || !LICH_KIP[tenNguoi]) return null;
+  return LICH_KIP[tenNguoi].lich[dateStr] || null;
+}
+
+// Lấy kíp của một người
+function getKip(tenNguoi) {
+  if (!LICH_KIP || !LICH_KIP[tenNguoi]) return null;
+  return LICH_KIP[tenNguoi].kip;
+}
+
+// Kiểm tra đổi ca có hợp lệ không
+// Điều kiện: 2 người phải trực 2 ca KHÁC nhau trong 2 ngày được chọn
+function kiemTraHopLe(tenA, caChuyenDi_date, tenB, caNhanVe_date) {
+  if (!LICH_KIP) return { ok: true, msg: '' };
+
+  const caA_homdo = getCaNgay(tenA, caChuyenDi_date);  // ca A đang trực ngày cần đổi
+  const caB_ngaydo = getCaNgay(tenB, caChuyenDi_date); // ca B ngày đó
+  const caA_ngaynhan = getCaNgay(tenA, caNhanVe_date); // ca A ngày nhận
+  const caB_ngaynhan = getCaNgay(tenB, caNhanVe_date); // ca B ngày nhận
+
+  const msgs = [];
+
+  // Nếu không có trong lịch (ngoài tháng 5-12/2026)
+  if (!caA_homdo && !caB_ngaynhan) return { ok: true, msg: 'Ngày ngoài phạm vi lịch' };
+
+  // Kiểm tra A có đang nghỉ không
+  if (caA_homdo === 'N') msgs.push(`⚠️ ${tenA} đang nghỉ ngày ${caChuyenDi_date}`);
+  // Kiểm tra B có đang nghỉ không
+  if (caB_ngaynhan === 'N') msgs.push(`⚠️ ${tenB} đang nghỉ ngày ${caNhanVe_date}`);
+  // Kiểm tra B ngày A chuyển đi có trực không (phải khác ca A)
+  if (caA_homdo && caB_ngaydo && caA_homdo !== 'N' && caB_ngaydo !== 'N' && caA_homdo === caB_ngaydo) {
+    msgs.push(`⚠️ ${tenA} và ${tenB} cùng trực ${caA_homdo} ngày ${caChuyenDi_date} — không thể đổi`);
+  }
+  // Kiểm tra A ngày nhận về có trực không
+  if (caA_ngaynhan && caA_ngaynhan !== 'N' && caB_ngaynhan && caB_ngaynhan !== 'N' && caA_ngaynhan === caB_ngaynhan) {
+    msgs.push(`⚠️ ${tenA} và ${tenB} cùng trực ${caA_ngaynhan} ngày ${caNhanVe_date} — không thể đổi`);
+  }
+
+  return { ok: msgs.length === 0, msg: msgs.join('\n'), caA: caA_homdo, caB_nhan: caB_ngaynhan };
+}
+
+// Tìm người CÓ THỂ đổi ca cho tenNguoi vào ngày đó
+function timNguoiCoTheDoiCa(tenNguoi, ngayChuyenDi) {
+  if (!LICH_KIP || !ngayChuyenDi) return [];
+
+  const caCanDoi = getCaNgay(tenNguoi, ngayChuyenDi);
+  if (!caCanDoi || caCanDoi === 'N') return [];
+
+  const kipNguoi = getKip(tenNguoi);
+  const goiY = [];
+
+  for (const [ten, info] of Object.entries(LICH_KIP)) {
+    if (ten === tenNguoi) continue;
+    // Chỉ gợi ý người kíp khác (khác kíp mới có thể đổi)
+    if (info.kip === kipNguoi) continue;
+
+    const caNgay = info.lich[ngayChuyenDi];
+    // Người đó phải đang trực ca khác vào ngày cần đổi
+    if (!caNgay || caNgay === 'N' || caNgay === caCanDoi) continue;
+
+    // Tìm ngày B có thể trực thay (ngày B đang trực caCanDoi, A nghỉ)
+    const ngayBuLai = timNgayBuLai(ten, caCanDoi, tenNguoi, ngayChuyenDi);
+
+    goiY.push({
+      ten,
+      kip: info.kip,
+      caHienTai: caNgay,
+      caCanDoi,
+      ngayBuLai: ngayBuLai?.ngay || null,
+      caBuLai: ngayBuLai?.ca || null,
+      hopLe: !!ngayBuLai
+    });
+  }
+
+  return goiY.sort((a, b) => (b.hopLe ? 1 : 0) - (a.hopLe ? 1 : 0));
+}
+
+// Tìm ngày B có thể trực thay cho A (ngày B đang trực caCanDoi, còn A nghỉ)
+function timNgayBuLai(tenB, caCanTimB, tenA, ngayGoc) {
+  if (!LICH_KIP) return null;
+  const lichA = LICH_KIP[tenA]?.lich || {};
+  const lichB = LICH_KIP[tenB]?.lich || {};
+
+  // Tìm trong vòng 30 ngày từ ngày gốc
+  const base = new Date(ngayGoc);
+  for (let delta = 1; delta <= 30; delta++) {
+    for (const sign of [1, -1]) {
+      const d = new Date(base);
+      d.setDate(d.getDate() + delta * sign);
+      const ds = d.toISOString().split('T')[0];
+      // B phải trực caCanTimB ngày đó, và A phải nghỉ hoặc trực ca khác
+      if (lichB[ds] === caCanTimB && lichA[ds] !== caCanTimB) {
+        return { ngay: ds, ca: caCanTimB };
+      }
+    }
+  }
+  return null;
+}
+
+// Gợi ý khi chọn người và ngày
+function capNhatGoiY() {
+  const nx = document.getElementById('nx')?.value;
+  const ddi = document.getElementById('ddi')?.value;
+  const cdi = document.getElementById('cdi')?.value;
+  const el = document.getElementById('goi-y-doi-ca');
+  if (!el) return;
+  if (!nx || !ddi || !LICH_KIP) { el.style.display = 'none'; return; }
+
+  const goiY = timNguoiCoTheDoiCa(nx, ddi);
+  if (!goiY.length) { el.style.display = 'none'; return; }
+
+  const caCanDoi = getCaNgay(nx, ddi);
+  const kipNx = getKip(nx);
+
+  el.style.display = 'block';
+  const hopLe = goiY.filter(g => g.hopLe).slice(0, 6);
+  const khac = goiY.filter(g => !g.hopLe).slice(0, 3);
+
+  const caMap = { C1: 'Ca 1', C2: 'Ca 2', C3: 'Ca 3', N: 'Nghỉ' };
+  const kipColor = { 'Kíp 1': '#00b4ff', 'Kíp 2': '#00d68f', 'Kíp 3': '#f0a500', 'Kíp 4': '#c084fc' };
+
+  let html = `<div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">
+    💡 Gợi ý đổi ca — ${nx} <span style="color:var(--accent)">(${kipNx})</span> đang trực <strong style="color:var(--red)">${caMap[caCanDoi]||caCanDoi}</strong> ngày ${fd(ddi)}
+  </div>`;
+
+  if (hopLe.length) {
+    html += `<div style="font-size:.7rem;color:var(--green);margin-bottom:6px">✅ Có thể đổi:</div>`;
+    html += hopLe.map(g => {
+      const kc = kipColor[g.kip] || '#fff';
+      return `<div class="goi-y-item" onclick="chonGoiY('${g.ten}','${g.ngayBuLai||''}','${g.caBuLai||''}','${caCanDoi}','${ddi}')"
+        style="background:rgba(0,214,143,.06);border:1px solid rgba(0,214,143,.25);border-radius:6px;padding:8px 10px;margin-bottom:5px;cursor:pointer;transition:all .2s"
+        onmouseover="this.style.background='rgba(0,214,143,.12)'" onmouseout="this.style.background='rgba(0,214,143,.06)'">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:6px;height:6px;border-radius:50%;background:${kc};flex-shrink:0"></span>
+          <strong style="font-size:.85rem;color:var(--text)">${g.ten}</strong>
+          <span style="font-size:.65rem;color:${kc};border:1px solid ${kc};padding:1px 6px;border-radius:10px">${g.kip}</span>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--green)">← Bấm để chọn</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:4px;padding-left:14px">
+          Ngày ${fd(ddi)}: đang trực <strong>${caMap[g.caHienTai]||g.caHienTai}</strong>
+          ${g.ngayBuLai ? `→ Bù lại: <strong>${caMap[g.caBuLai]||g.caBuLai}</strong> ngày <strong>${fd(g.ngayBuLai)}</strong>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if (khac.length) {
+    html += `<div style="font-size:.7rem;color:var(--muted);margin:6px 0 4px">⚠️ Có thể xem xét:</div>`;
+    html += khac.map(g => {
+      const kc = kipColor[g.kip] || '#888';
+      return `<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:6px;padding:7px 10px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="width:6px;height:6px;border-radius:50%;background:${kc};flex-shrink:0"></span>
+          <strong style="font-size:.82rem;color:var(--muted)">${g.ten}</strong>
+          <span style="font-size:.65rem;color:${kc};border:1px solid ${kc};padding:1px 6px;border-radius:10px">${g.kip}</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:3px;padding-left:13px">Ngày ${fd(ddi)}: trực <strong>${caMap[g.caHienTai]||g.caHienTai}</strong></div>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML = html;
+}
+
+// Khi bấm chọn gợi ý → tự điền form
+window.chonGoiY = function(ten, ngayBuLai, caBuLai, caCanDoi, ngayChuyenDi) {
+  // Điền người đổi
+  const ndEl = document.getElementById('nd');
+  if (ndEl) {
+    ndEl.value = ten;
+    // Nếu option không tồn tại, thêm vào
+    if (![...ndEl.options].find(o => o.value === ten)) {
+      const opt = new Option(ten, ten);
+      ndEl.appendChild(opt);
+    }
+    ndEl.value = ten;
+  }
+  // Điền ca chuyển đi
+  const caMap2 = { C1: 'Ca 1', C2: 'Ca 2', C3: 'Ca 3' };
+  const cdiEl = document.getElementById('cdi');
+  if (cdiEl && caCanDoi) cdiEl.value = caMap2[caCanDoi] || caCanDoi;
+  // Điền ngày chuyển đi (đã có)
+  // Điền ca nhận về & ngày
+  if (ngayBuLai) {
+    const cveEl = document.getElementById('cve');
+    const dveEl = document.getElementById('dve');
+    if (cveEl && caBuLai) cveEl.value = caMap2[caBuLai] || caBuLai;
+    if (dveEl) dveEl.value = ngayBuLai;
+  }
+  bind();
+  // Flash xác nhận
+  const el = document.getElementById('goi-y-doi-ca');
+  if (el) {
+    el.style.borderColor = 'rgba(0,214,143,.6)';
+    setTimeout(() => { el.style.borderColor = 'rgba(0,180,255,.15)'; }, 800);
+  }
+};
+
+
+
 // ===== STATE =====
 window.rec = [];
 
@@ -156,6 +371,12 @@ function bind() {
 document.querySelectorAll('input, select, textarea').forEach(e => {
   e.addEventListener('input', bind);
   e.addEventListener('change', bind);
+});
+
+// Trigger gợi ý khi thay đổi người hoặc ngày
+['nx', 'ddi', 'cdi'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', capNhatGoiY);
 });
 
 // ===== COLLECT FORM DATA =====
