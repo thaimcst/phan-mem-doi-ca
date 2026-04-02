@@ -987,13 +987,9 @@ async function sendAI() {
   btn.textContent = '...';
   input.value = '';
 
-  // Thêm tin nhắn user
   appendAIMsg('user', msg);
-
-  // Thêm typing indicator
   const typingId = appendTyping();
 
-  // Build messages
   AI_HISTORY.push({ role: 'user', content: msg });
   if (AI_HISTORY.length > 10) AI_HISTORY.splice(0, 2);
 
@@ -1008,15 +1004,24 @@ async function sendAI() {
     });
 
     const data = await res.json();
-    const reply = data.content?.[0]?.text || 'Xin lỗi, có lỗi xảy ra!';
 
+    // Hiện lỗi chi tiết nếu có
+    if (!res.ok || data.error) {
+      removeTyping(typingId);
+      appendAIMsg('ai', `❌ Lỗi API: ${data.error || res.status + ' ' + res.statusText}`);
+      btn.disabled = false;
+      btn.textContent = 'GỬI ➤';
+      return;
+    }
+
+    const reply = data.content?.[0]?.text || JSON.stringify(data);
     removeTyping(typingId);
     AI_HISTORY.push({ role: 'assistant', content: reply });
     appendAIMsg('ai', reply);
 
   } catch(e) {
     removeTyping(typingId);
-    appendAIMsg('ai', '❌ Không kết nối được AI. Kiểm tra lại kết nối mạng.');
+    appendAIMsg('ai', `❌ Lỗi kết nối: ${e.message}`);
   }
 
   btn.disabled = false;
