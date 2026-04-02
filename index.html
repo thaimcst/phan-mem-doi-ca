@@ -3,291 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Lý Đổi Ca | UTMC — Đường Hầm TP.HCM</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300b4ff'/%3E%3Cstop offset='100%25' stop-color='%230066cc'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d68f'/%3E%3Cstop offset='100%25' stop-color='%2300996a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='36' height='36' rx='8' fill='%23060e1e'/%3E%3Ccircle cx='18' cy='18' r='16' fill='%2308142a' stroke='url(%23a)' stroke-width='1.5'/%3E%3Ccircle cx='18' cy='18' r='12' fill='%23040c1a'/%3E%3Cpath d='M11 15 C11 9 15.5 7 18 9.5' fill='none' stroke='%2300b4ff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpolygon points='18,5.5 18,13.5 23,9.5' fill='%2300b4ff'/%3E%3Cpath d='M25 21 C25 27 20.5 29 18 26.5' fill='none' stroke='%2300d68f' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpolygon points='18,30.5 18,22.5 13,26.5' fill='%2300d68f'/%3E%3Ccircle cx='18' cy='18' r='2.2' fill='%2300b4ff' opacity='.9'/%3E%3C/svg%3E">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Quản Lý Đổi Ca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Decorative elements -->
-<div class="light-trail"></div>
-<div class="scanlines"></div>
-<div class="corner c-tl"></div>
-<div class="corner c-tr"></div>
-<div class="corner c-bl"></div>
-<div class="corner c-br"></div>
-
 <div class="no-print">
-
-  <!-- ── HEADER ── -->
   <header class="header">
-    <div class="logo">
-      <div class="logo-emblem">
-        <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="display:block">
-          <defs>
-            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#00b4ff"/>
-              <stop offset="100%" stop-color="#0055cc"/>
-            </linearGradient>
-            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#00e09a"/>
-              <stop offset="100%" stop-color="#008855"/>
-            </linearGradient>
-          </defs>
-          <!-- Outer glow ring -->
-          <circle cx="22" cy="22" r="20" fill="none" stroke="url(#lg1)" stroke-width="0.8" opacity="0.4"/>
-          <!-- Main ring -->
-          <circle cx="22" cy="22" r="18" fill="#08142a" stroke="url(#lg1)" stroke-width="2"/>
-          <!-- Inner dark -->
-          <circle cx="22" cy="22" r="13" fill="#040c1a"/>
-          <!-- Tunnel rings (đường hầm) -->
-          <ellipse cx="22" cy="22" rx="9" ry="7.5" fill="none" stroke="#0d2a50" stroke-width="0.8"/>
-          <ellipse cx="22" cy="22" rx="5" ry="4" fill="#00b4ff" opacity="0.1"/>
-          <!-- Tick marks clock-style -->
-          <line x1="22" y1="4"  x2="22" y2="7"  stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-          <line x1="22" y1="37" x2="22" y2="40" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-          <line x1="4"  y1="22" x2="7"  y2="22" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-          <line x1="37" y1="22" x2="40" y2="22" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-          <line x1="9"  y1="9"  x2="11" y2="11" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
-          <line x1="35" y1="9"  x2="33" y2="11" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
-          <line x1="9"  y1="35" x2="11" y2="33" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
-          <line x1="35" y1="35" x2="33" y2="33" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
-          <!-- Arrow 1: blue (trên) -->
-          <path d="M13 18 C13 11, 18 8.5, 22 11.5" fill="none" stroke="url(#lg1)" stroke-width="2.8" stroke-linecap="round"/>
-          <polygon points="22,7 22,16 28,11.5" fill="#00b4ff"/>
-          <!-- Arrow 2: teal (dưới) -->
-          <path d="M31 26 C31 33, 26 35.5, 22 32.5" fill="none" stroke="url(#lg2)" stroke-width="2.8" stroke-linecap="round"/>
-          <polygon points="22,37 22,28 16,32.5" fill="#00e09a"/>
-          <!-- Center dot -->
-          <circle cx="22" cy="22" r="2.8" fill="#00b4ff" opacity="0.95"/>
-          <circle cx="22" cy="22" r="1.2" fill="#ffffff" opacity="0.6"/>
-        </svg>
-      </div>
-      <div class="logo-info">
-        <div class="logo-main">UTMC · Đường Hầm</div>
-        <div class="logo-sub">Trung Tâm Quản Lý Điều Hành Giao Thông</div>
-      </div>
-    </div>
-    <div class="header-center">
-      <div class="sys-status">
-        <div class="status-dot"></div>
-        HỆ THỐNG HOẠT ĐỘNG
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="date-badge" id="dateBadge">—</div>
-      <div class="clock" id="clock">00:00:00</div>
-    </div>
+    <div class="logo"><div class="logo-icon">🔄</div><span>QUẢN LÝ ĐỔI CA</span></div>
+    <div class="clock" id="clock">00:00:00</div>
   </header>
-
-  <!-- ── HERO STRIP ── -->
-  <div class="hero">
-    <div class="hero-left">
-      <div class="hero-breadcrumb">
-        UTMC <span>›</span> Vận Hành <span>›</span> Đổi Ca
-      </div>
-      <div class="hero-title">QUẢN LÝ ĐỔI CA</div>
-    </div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-num" id="stat-total">—</div><div class="hstat-lbl">Tổng đơn</div></div>
-      <div class="hstat"><div class="hstat-num" id="stat-month">—</div><div class="hstat-lbl">Tháng này</div></div>
-      <div class="hstat"><div class="hstat-num" id="stat-today">—</div><div class="hstat-lbl">Hôm nay</div></div>
-    </div>
-  </div>
-
-  <!-- ── MAIN ── -->
   <div class="main">
-
-    <!-- Left: Form -->
     <div class="col-left">
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-icon"></div>TẠO ĐƠN ĐỔI CA</div>
-          <div class="panel-tag">FORM</div>
-        </div>
-        <div class="panel-inner">
+        <div class="panel-title">Tạo Đơn Đổi Ca</div>
         <form id="frm">
           <div class="radio-tabs">
             <div class="radio-tab"><input type="radio" name="loai" id="r1" value="nhanvien" checked><label for="r1">👤 Nhân viên</label></div>
             <div class="radio-tab"><input type="radio" name="loai" id="r2" value="truongca"><label for="r2">⭐ Trưởng ca</label></div>
           </div>
-
           <div class="field"><label>Người viết đơn</label>
-            <select id="nx" required><option value="" disabled selected>— Chọn tên —</option>
+            <select id="nx" required><option value="" disabled selected>-- Chọn tên --</option>
               <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
             </select></div>
 
-          <div class="person-block pb-1">
-            <div class="person-block-accent"></div>
-            <div class="sec-label person-label-1"><div class="sec-label-dot"></div>Người đổi thứ nhất</div>
-
-            <!-- Gợi ý đổi ca -->
-            <div id="goi-y-doi-ca" style="display:none;background:rgba(0,20,50,.4);border:1px solid rgba(0,180,255,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px;max-height:320px;overflow-y:auto"></div>
-            <div class="field"><label>Tên người đổi ca</label>
-              <select id="nd" required><option value="" disabled selected>— Chọn tên —</option>
+          <div class="person-block">
+            <div class="sec-label person-label-1">👤 Người đổi thứ nhất</div>
+            <div class="field"><label>Người đổi ca thay thế</label>
+              <select id="nd" required><option value="" disabled selected>-- Chọn tên --</option>
                 <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
               </select></div>
-            <div class="sec-label"><div class="sec-label-dot"></div>Ca chuyển đi</div>
+            <div class="sec-label">Ca Chuyển Đi — Ca của bạn để lại</div>
             <div class="row2">
               <div class="field"><select id="cdi" required><option value="" disabled selected>Chọn ca</option><option value="Ca 1">Ca 1</option><option value="Ca 2">Ca 2</option><option value="Ca 3">Ca 3</option><option value="Ca Hành chính">Hành Chính</option></select></div>
               <div class="field"><input type="date" id="ddi" required></div>
             </div>
-            <div class="sec-label"><div class="sec-label-dot"></div>Ca nhận về</div>
+            <div class="sec-label">Ca Nhận Về — Ca trực bù lại</div>
             <div class="row2">
               <div class="field"><select id="cve" required><option value="" disabled selected>Chọn ca</option><option value="Ca 1">Ca 1</option><option value="Ca 2">Ca 2</option><option value="Ca 3">Ca 3</option><option value="Ca Hành chính">Hành Chính</option></select></div>
               <div class="field"><input type="date" id="dve" required></div>
             </div>
           </div>
 
+          <!-- Toggle người đổi 2 -->
           <div class="toggle-wrap">
             <label class="toggle-label">
               <input type="checkbox" id="chk2">
-              <span class="toggle-btn">＋ THÊM NGƯỜI ĐỔI THỨ HAI</span>
+              <span class="toggle-btn">➕ Thêm người đổi thứ hai</span>
             </label>
           </div>
 
+          <!-- Người đổi 2 -->
           <div class="person-block" id="block2" style="display:none">
-            <div class="person-block-accent"></div>
-            <div class="sec-label person-label-2"><div class="sec-label-dot"></div>Người đổi thứ hai</div>
-            <div class="field"><label>Tên người đổi ca (2)</label>
-              <select id="nd2"><option value="" disabled selected>— Chọn tên —</option>
+            <div class="sec-label person-label-2">👥 Người đổi thứ hai</div>
+            <div class="field"><label>Người đổi ca thay thế (2)</label>
+              <select id="nd2"><option value="" disabled selected>-- Chọn tên --</option>
                 <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
               </select></div>
-            <div class="sec-label"><div class="sec-label-dot"></div>Ca chuyển đi (2)</div>
+            <div class="sec-label">Ca Chuyển Đi (2) — Ca của bạn để lại</div>
             <div class="row2">
               <div class="field"><select id="cdi2"><option value="" disabled selected>Chọn ca</option><option value="Ca 1">Ca 1</option><option value="Ca 2">Ca 2</option><option value="Ca 3">Ca 3</option><option value="Ca Hành chính">Hành Chính</option></select></div>
               <div class="field"><input type="date" id="ddi2"></div>
             </div>
-            <div class="sec-label"><div class="sec-label-dot"></div>Ca nhận về (2)</div>
+            <div class="sec-label">Ca Nhận Về (2) — Ca trực bù lại</div>
             <div class="row2">
               <div class="field"><select id="cve2"><option value="" disabled selected>Chọn ca</option><option value="Ca 1">Ca 1</option><option value="Ca 2">Ca 2</option><option value="Ca 3">Ca 3</option><option value="Ca Hành chính">Hành Chính</option></select></div>
               <div class="field"><input type="date" id="dve2"></div>
             </div>
           </div>
 
-          <div class="field" style="margin-top:.9rem">
-            <label>Số lần đổi ca trong tháng</label>
+          <div class="field" style="margin-top:1rem">
+            <label>Số lần đã đổi ca trong tháng</label>
             <input type="number" id="sl" required placeholder="VD: 1" min="1">
           </div>
           <div class="field">
             <label>Lý do</label>
-            <textarea id="ld" required placeholder="Nhập lý do xin đổi ca..."></textarea>
+            <textarea id="ld" required placeholder="Lý do xin đổi ca..."></textarea>
           </div>
           <div class="btn-row">
-            <button type="button" id="btnWord" class="btn btn-word">📄 WORD</button>
-            <button type="button" id="btnPrint" class="btn btn-print">🖨 IN</button>
-            <button type="button" id="btnPdf" class="btn btn-pdf">📑 PDF</button>
-            <button type="submit" class="btn btn-save">💾 LƯU ĐƠN</button>
+            <button type="button" id="btnWord" class="btn btn-word">📄 Word</button>
+            <button type="button" id="btnPrint" class="btn btn-print">🖨️ In</button>
+            <button type="submit" class="btn btn-save">💾 Lưu</button>
           </div>
         </form>
-        </div>
       </div>
     </div>
 
-    <!-- Right: Table + Chart -->
     <div class="col-right">
-
-      <!-- AI ASSISTANT PANEL -->
-      <div class="panel" style="margin-bottom:1.5rem" id="ai-panel">
-        <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-icon" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></div>TRỢ LÝ AI ĐỔI CA</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div id="ai-status" style="display:flex;align-items:center;gap:5px;font-size:.62rem;color:var(--green);letter-spacing:1px">
-              <div style="width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)"></div>
-              CLAUDE AI
-            </div>
-            <div class="panel-tag">BETA</div>
-          </div>
-        </div>
-
-        <!-- Quick action buttons -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.15)">
-          <button class="ai-quick-btn" onclick="aiQuick('phan-tich')">📊 Phân tích xu hướng</button>
-          <button class="ai-quick-btn" onclick="aiQuick('canh-bao')">⚠️ Cảnh báo bất thường</button>
-          <button class="ai-quick-btn" onclick="aiQuick('goi-y')">💡 Gợi ý đổi ca tốt nhất</button>
-          <button class="ai-quick-btn" onclick="aiQuick('tom-tat')">📋 Tóm tắt tháng này</button>
-        </div>
-
-        <!-- Chat area -->
-        <div id="ai-chat" style="height:240px;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:10px">
-          <div class="ai-msg-ai">
-            <div class="ai-msg-icon">🤖</div>
-            <div class="ai-msg-text">Xin chào! Tôi là trợ lý AI của hệ thống Quản lý Đổi Ca UTMC. Tôi có thể giúp bạn:<br>
-            • Phân tích xu hướng đổi ca<br>
-            • Phát hiện xung đột và bất thường<br>
-            • Gợi ý người đổi ca phù hợp<br>
-            • Tóm tắt và giải thích lịch sử<br><br>
-            Hỏi tôi bất cứ điều gì về lịch ca!</div>
-          </div>
-        </div>
-
-        <!-- Input -->
-        <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:8px;background:rgba(0,0,0,.15)">
-          <input id="ai-input" type="text" placeholder="Hỏi AI về lịch ca, đổi ca..."
-            style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:4px;font-family:inherit;font-size:.83rem"
-            onkeydown="if(event.key==='Enter')sendAI()">
-          <button onclick="sendAI()" id="ai-send-btn"
-            style="background:linear-gradient(135deg,#00b4ff,#0066cc);color:#fff;border:none;padding:8px 18px;border-radius:4px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
-            GỬI ➤
-          </button>
-        </div>
-      </div>
-      <div class="panel" style="margin-bottom:1.5rem">
-        <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-icon"></div>THỐNG KÊ ĐỔI CA</div>
-          <div class="panel-tag">ANALYTICS</div>
-        </div>
-        <div style="display:flex;gap:1.25rem;padding:1rem 1.5rem">
-          <!-- Biểu đồ 6 tháng -->
-          <div style="flex:1.6;min-width:0">
-            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Đơn đổi ca 6 tháng gần nhất</div>
-            <div style="height:160px;position:relative">
-              <canvas id="chartDoiCa"></canvas>
-            </div>
-          </div>
-          <!-- Thống kê nhân viên tháng này -->
-          <div style="flex:1;min-width:160px;border-left:1px solid var(--border);padding-left:1.25rem">
-            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Tháng này — lượt đổi ca</div>
-            <div id="thongKeNV" style="max-height:160px;overflow-y:auto"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bảng lịch sử -->
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><div class="panel-title-icon"></div>LỊCH SỬ ĐƠN ĐÃ LƯU</div>
-          <div class="panel-tag">DATABASE</div>
-        </div>
-        <!-- Filter bar -->
-        <div style="display:flex;gap:8px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2)">
-          <div style="font-size:.62rem;color:var(--muted);letter-spacing:1px;white-space:nowrap">LỌC:</div>
-          <select id="filterTen" onchange="applyFilter()" style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit">
-            <option value="">— Tất cả nhân viên —</option>
-            <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
-          </select>
-          <input id="filterThang" type="month" onchange="applyFilter()" style="background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit;width:140px">
-          <button onclick="clearFilter()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:3px;font-size:.72rem;cursor:pointer;font-family:inherit;white-space:nowrap">✕ Xóa lọc</button>
+        <div class="panel-title">Lịch Sử Đơn Đã Lưu</div>
+        <div class="stats-strip">
+          <div class="stat-pill"><div class="num" id="stat-total">0</div><div class="lbl">Tổng đơn</div></div>
+          <div class="stat-pill"><div class="num" id="stat-month">0</div><div class="lbl">Tháng này</div></div>
+          <div class="stat-pill"><div class="num" id="stat-today">0</div><div class="lbl">Hôm nay</div></div>
         </div>
         <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>Ngày tạo</th>
-              <th>Người xin đổi</th>
-              <th>Người trực thay</th>
-              <th>Chi tiết ca</th>
-              <th>Thao tác</th>
-            </tr></thead>
-            <tbody id="tbody">
-              <tr><td colspan="5" class="empty">⏳ ĐANG TẢI DỮ LIỆU...</td></tr>
-            </tbody>
-          </table>
+          <table><thead><tr><th>Ngày tạo</th><th>Người xin đổi</th><th>Người trực thay</th><th>Chi tiết ca</th><th>Thao tác</th></tr></thead>
+          <tbody id="tbody"><tr><td colspan="5" class="empty">Đang tải...</td></tr></tbody></table>
         </div>
       </div>
-
     </div>
-
   </div>
 </div>
 
@@ -311,15 +127,19 @@
     <p>Rất mong được sự chấp thuận của Đội trưởng.</p>
     <p>Trân trọng cảm ơn.</p>
   </div>
+
+  <!-- Chữ ký 1 người đổi -->
   <div class="sig-wrap" id="sig_wrap_1">
     <div class="sig-row">
       <div class="sig-box"><span>Người đổi</span><span class="sig-name" id="p_ndk"></span></div>
-      <div class="sig-box"><span>Đội trưởng</span><span class="sig-mid-name">Nguyễn Văn Trung</span></div>
       <div class="sig-box"><span>Người viết đơn</span><span class="sig-name" id="p_nxk"></span></div>
     </div>
+    <div class="sig-mid"><div><span>Đội trưởng</span><span class="sig-mid-name">Nguyễn Văn Trung</span></div></div>
   </div>
+
+  <!-- Chữ ký 2 người đổi -->
   <div class="sig-wrap" id="sig_wrap_2" style="display:none">
-    <div class="sig-row">
+    <div class="sig-row3">
       <div class="sig-box"><span>Người đổi (1)</span><span class="sig-name" id="p_ndk_b1"></span></div>
       <div class="sig-box"><span>Người đổi (2)</span><span class="sig-name" id="p_ndk_b2"></span></div>
       <div class="sig-box"><span>Người viết đơn</span><span class="sig-name" id="p_nxk2"></span></div>
@@ -329,7 +149,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
