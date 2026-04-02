@@ -182,12 +182,46 @@
       </div>
     </div>
 
-    <!-- Right: Table -->
+    <!-- Right: Table + Chart -->
     <div class="col-right">
+
+      <!-- Biểu đồ + Thống kê nhân viên -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-title-icon"></div>THỐNG KÊ ĐỔI CA</div>
+          <div class="panel-tag">ANALYTICS</div>
+        </div>
+        <div style="display:flex;gap:1.25rem;padding:1rem 1.5rem">
+          <!-- Biểu đồ 6 tháng -->
+          <div style="flex:1.6;min-width:0">
+            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Đơn đổi ca 6 tháng gần nhất</div>
+            <div style="height:160px;position:relative">
+              <canvas id="chartDoiCa"></canvas>
+            </div>
+          </div>
+          <!-- Thống kê nhân viên tháng này -->
+          <div style="flex:1;min-width:160px;border-left:1px solid var(--border);padding-left:1.25rem">
+            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Tháng này — lượt đổi ca</div>
+            <div id="thongKeNV" style="max-height:160px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng lịch sử -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title"><div class="panel-title-icon"></div>LỊCH SỬ ĐƠN ĐÃ LƯU</div>
           <div class="panel-tag">DATABASE</div>
+        </div>
+        <!-- Filter bar -->
+        <div style="display:flex;gap:8px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2)">
+          <div style="font-size:.62rem;color:var(--muted);letter-spacing:1px;white-space:nowrap">LỌC:</div>
+          <select id="filterTen" onchange="applyFilter()" style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit">
+            <option value="">— Tất cả nhân viên —</option>
+            <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
+          </select>
+          <input id="filterThang" type="month" onchange="applyFilter()" style="background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit;width:140px">
+          <button onclick="clearFilter()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:3px;font-size:.72rem;cursor:pointer;font-family:inherit;white-space:nowrap">✕ Xóa lọc</button>
         </div>
         <div class="table-wrap">
           <table>
@@ -204,6 +238,7 @@
           </table>
         </div>
       </div>
+
     </div>
 
   </div>
@@ -247,6 +282,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
