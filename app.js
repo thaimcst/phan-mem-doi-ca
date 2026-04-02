@@ -1069,3 +1069,507 @@ function removeTyping(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
+
+// ╔══════════════════════════════════════════════╗
+// ║            MODULE: NGHỈ PHÉP                 ║
+// ╚══════════════════════════════════════════════╝
+
+const NP_API = 'https://phan-d-default-rtdb.asia-southeast1.firebasedatabase.app/don_nghi_phep';
+window.npRec = [];
+let npChart = null;
+
+// ── Module switching ──
+window.switchModule = function(mod) {
+  const isDC = mod === 'doica';
+  document.getElementById('mod-doica').style.display = isDC ? '' : 'none';
+  document.getElementById('mod-nghiphep').style.display = isDC ? 'none' : '';
+  document.getElementById('hstats-dc').style.display = isDC ? '' : 'none';
+  document.getElementById('hstats-np').style.display = isDC ? 'none' : '';
+  document.getElementById('tab-doica').className = 'mod-tab' + (isDC ? ' mod-active' : '');
+  document.getElementById('tab-nghiphep').className = 'mod-tab' + (!isDC ? ' mod-active' : '');
+  const ht = document.querySelector('.hero-title');
+  const hb = document.querySelector('.hero-breadcrumb');
+  if (ht) ht.textContent = isDC ? 'QUẢN LÝ ĐỔI CA' : 'QUẢN LÝ NGHỈ PHÉP';
+  if (hb) hb.innerHTML = isDC
+    ? 'UTMC <span>›</span> Vận Hành <span>›</span> Đổi Ca'
+    : 'UTMC <span>›</span> Vận Hành <span>›</span> Nghỉ Phép';
+  if (!isDC) npLoad();
+};
+
+// ── Helpers ──
+function npFd(s) { if (!s) return '...'; const p = s.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+
+// Hiển thị phép còn lại khi nhập
+function npCapNhatConLai() {
+  const duoc = parseFloat(document.getElementById('np-phepduochhuong')?.value) || 0;
+  const da = parseFloat(document.getElementById('np-phepdaosudung')?.value) || 0;
+  const xin = parseFloat(document.getElementById('np-songaynghi')?.value) || 0;
+  const el = document.getElementById('np-phep-conlai');
+  if (!el || !duoc) { el.style.display='none'; return; }
+  const conlai = duoc - da - xin;
+  el.style.display = 'block';
+  const color = conlai < 0 ? '#f43f5e' : conlai <= 2 ? '#f59e0b' : '#00d68f';
+  el.style.cssText = `display:block;margin-top:5px;padding:6px 10px;border-radius:4px;font-size:.75rem;font-weight:600;background:rgba(0,10,30,.4);border:1px solid ${color}40;color:${color}`;
+  el.innerHTML = conlai < 0
+    ? `⛔ Vượt quá số ngày phép được hưởng (còn ${duoc-da} ngày)`
+    : `📊 Sau khi nghỉ còn lại: <strong>${conlai} ngày phép</strong>`;
+}
+['np-phepduochhuong','np-phepdaosudung','np-songaynghi'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', npCapNhatConLai);
+});
+
+// ── Bind print area ──
+function npBind() {
+  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val||''; };
+  const nx = document.getElementById('np-nx')?.value || '';
+  const chucvu = document.getElementById('np-chucvu')?.value || '';
+  const thamnien = document.getElementById('np-thamnien')?.value || '';
+  const phepnam = document.getElementById('np-phepduochhuong')?.value || '';
+  const phepdaosudung = document.getElementById('np-phepdaosudung')?.value || '00';
+  const songay = document.getElementById('np-songaynghi')?.value || '';
+  const tungay = document.getElementById('np-tungay')?.value || '';
+  const denngay = document.getElementById('np-denngay')?.value || '';
+  const lydo = document.getElementById('np-lydo')?.value || '';
+  const noinghi = document.getElementById('np-noinghi')?.value || '';
+  const now = new Date();
+
+  // Tạo chuỗi ngày nghỉ: "ngày 08/4/2026 và ngày 09/4/2026" hoặc "từ ngày ... đến ngày ..."
+  let ngaynghi = '';
+  if (tungay && denngay && tungay === denngay) {
+    ngaynghi = `ngày ${npFd(tungay)}`;
+  } else if (tungay && denngay) {
+    ngaynghi = `từ ngày ${npFd(tungay)} đến ngày ${npFd(denngay)}`;
+  } else if (tungay) {
+    ngaynghi = `từ ngày ${npFd(tungay)}`;
+  }
+
+  set('np_p_ng', now.getDate().toString().padStart(2,'0'));
+  set('np_p_th', (now.getMonth()+1).toString().padStart(2,'0'));
+  set('np_p_na', now.getFullYear());
+  set('np_p_nam', now.getFullYear());
+  set('np_p_nx', nx);
+  set('np_p_chucvu', chucvu);
+  set('np_p_thamnien', thamnien || '...');
+  set('np_p_phepnam', phepnam || '...');
+  set('np_p_phepdaosudung', phepdaosudung.toString().padStart(2,'0'));
+  set('np_p_songay', songay || '...');
+  set('np_p_songay2', songay || '...');
+  set('np_p_ngaynghi', ngaynghi || '.....................');
+  set('np_p_lydo', lydo || '.....................');
+  set('np_p_noinghi', noinghi || '.....................');
+  set('np_p_nxk', nx ? tc(nx) : '.............................');
+}
+
+document.querySelectorAll('#frm-np input, #frm-np select').forEach(e => {
+  e.addEventListener('input', npBind);
+  e.addEventListener('change', npBind);
+});
+
+// ── Collect form ──
+function npCollect() {
+  const now = new Date();
+  return {
+    nguoiXin: document.getElementById('np-nx')?.value || '',
+    chucVu: document.getElementById('np-chucvu')?.value || '',
+    thamNien: document.getElementById('np-thamnien')?.value || '',
+    phepNam: document.getElementById('np-phepduochhuong')?.value || '',
+    phepDaDung: document.getElementById('np-phepdaosudung')?.value || '0',
+    soNgay: document.getElementById('np-songaynghi')?.value || '',
+    tuNgay: document.getElementById('np-tungay')?.value || '',
+    denNgay: document.getElementById('np-denngay')?.value || '',
+    lyDo: document.getElementById('np-lydo')?.value || '',
+    noiNghi: document.getElementById('np-noinghi')?.value || '',
+    nguoiThay: document.getElementById('np-nguoithay')?.value || '',
+    ng: now.getDate().toString().padStart(2,'0'),
+    th: (now.getMonth()+1).toString().padStart(2,'0'),
+    na: now.getFullYear().toString()
+  };
+}
+
+// ── CSS in đơn ──
+const NP_CSS = `
+  @page{size:A4;margin:20mm 18mm 20mm 25mm}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Times New Roman',Times,serif;font-size:13pt;line-height:1.6;color:#000;background:#fff}
+  .header-tbl{width:100%;border-collapse:collapse;margin-bottom:6px}
+  .header-tbl td{border:none;padding:0;font-size:12pt;line-height:1.4;vertical-align:top}
+  .bold{font-weight:bold}.ul{text-decoration:underline}.center{text-align:center}.right{text-align:right}
+  .pd{text-align:right;margin:6px 0 14px;font-style:italic;font-size:12pt}
+  .pt{text-align:center;font-size:15pt;font-weight:bold;margin:10px 0 14px}
+  .kg{font-size:12pt;margin-bottom:4px}
+  .kg-list{padding-left:30px;font-size:12pt;margin-bottom:10px}
+  .kg-list div{margin-bottom:2px}
+  .pc p{text-indent:10mm;margin-bottom:3px;text-align:justify;font-size:12pt}
+  .sig-area{margin-top:20px}
+  .sig-tbl{width:100%;border-collapse:collapse;text-align:center;font-size:12pt}
+  .sig-tbl td{padding:2px;border:none}
+  .sig-space td{height:13px}
+  .gd-block{text-align:center;margin-top:16px;font-size:12pt}
+`;
+
+// ── Build HTML đơn nghỉ phép ──
+function npBuildHTML(d) {
+  // Chuỗi ngày nghỉ
+  let ngaynghi = '';
+  if (d.tuNgay && d.denNgay && d.tuNgay === d.denNgay) {
+    ngaynghi = `ngày ${npFd(d.tuNgay)}`;
+  } else if (d.tuNgay && d.denNgay) {
+    ngaynghi = `từ ngày ${npFd(d.tuNgay)} đến ngày ${npFd(d.denNgay)}`;
+  }
+  const nam = d.na;
+  const pda = d.phepDaDung.toString().padStart(2,'0');
+
+  return `
+  <table class="header-tbl">
+    <tr>
+      <td width="45%" class="center">
+        <div class="bold">TRUNG TÂM QUẢN LÝ</div>
+        <div class="bold">ĐIỀU HÀNH GIAO THÔNG ĐÔ THỊ</div>
+        <div class="bold ul">ĐỘI VẬN HÀNH, BẢO TRÌ ĐƯỜNG HẦM</div>
+      </td>
+      <td width="55%" class="center">
+        <div class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+        <div class="bold ul">Độc lập – Tự do – Hạnh phúc</div>
+      </td>
+    </tr>
+  </table>
+  <div class="pd"><i>Thành phố Hồ Chí Minh, ngày ${d.ng} tháng ${d.th} năm ${d.na}.</i></div>
+  <div class="pt">ĐƠN XIN NGHỈ PHÉP</div>
+  <div class="kg"><b>Kính gửi:</b></div>
+  <div class="kg-list">
+    <div>- Giám đốc Trung tâm.</div>
+    <div>- Trưởng Phòng Tổ chức hành chính.</div>
+    <div>- Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
+  </div>
+  <div class="pc">
+    <p>Tôi tên là: ${d.nguoiXin}.</p>
+    <p>Chức vụ: ${d.chucVu || '......................'}.</p>
+    <p>Bộ phận công tác: Đội Vận hành, bảo trì đường hầm.</p>
+    <p>Thời gian làm việc tại Trung tâm: ${d.thamNien || '...'} năm.</p>
+    <p>Số ngày phép được hưởng trong năm ${nam}: ${d.phepNam || '...'} ngày.</p>
+    <p>Số ngày phép đã sử dụng: ${pda} ngày.</p>
+    <p>Số ngày xin nghỉ phép: ${d.soNgay || '...'} ngày.</p>
+    <p>Kính đề nghị: Giám đốc Trung tâm, trưởng Phòng Tổ chức hành chính, Đội trưởng Đội Vận hành, bảo trì đường hầm xem xét giải quyết cho tôi được nghỉ phép: ${d.soNgay || '...'} ngày, ${ngaynghi || '......................'}.</p>
+    <p>Lý do nghỉ phép: ${d.lyDo || '......................'}.</p>
+    <p>Nơi nghỉ phép: ${d.noiNghi || '......................'}.</p>
+    <p>Kính mong được sự chấp thuận.</p>
+  </div>
+  <div class="sig-area">
+    <table class="sig-tbl">
+      <tr>
+        <td><b>TRƯỞNG PHÒNG TCHC</b></td>
+        <td><b>ĐỘI TRƯỞNG</b></td>
+        <td><b>NGƯỜI LÀM ĐƠN</b></td>
+      </tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr class="sig-space"><td></td><td></td><td></td></tr>
+      <tr>
+        <td><b>Trịnh Thị Kim Châu</b></td>
+        <td><b>Nguyễn Văn Trung</b></td>
+        <td><b>${tc(d.nguoiXin) || '.......................'}</b></td>
+      </tr>
+    </table>
+    <div class="gd-block"><b>GIÁM ĐỐC</b><br><br><br><br></div>
+  </div>`;
+}
+
+// ── IN đơn nghỉ phép ──
+document.getElementById('np-btnPrint')?.addEventListener('click', async () => {
+  npBind();
+  const d = npCollect();
+  if (!d.nguoiXin || !d.soNgay) { alert('⚠️ Vui lòng điền đầy đủ thông tin!'); return; }
+  const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+    <title>Don_Nghi_Phep_${tc(d.nguoiXin).replace(/ /g,'_')}</title>
+    <style>${NP_CSS}</style></head><body>${npBuildHTML(d)}
+    <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};<\/script>
+  </body></html>`;
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if (!w) { alert('Trình duyệt chặn popup! Vui lòng cho phép popup.'); return; }
+  w.document.write(html);
+  w.document.close();
+  await npAutoSave(d, 'in');
+});
+
+// ── WORD đơn nghỉ phép ──
+document.getElementById('np-btnWord')?.addEventListener('click', async () => {
+  npBind();
+  const d = npCollect();
+  if (!d.nguoiXin) { alert('⚠️ Vui lòng chọn người làm đơn!'); return; }
+  npExpDocx(d, 'Don_Nghi_Phep_' + tc(d.nguoiXin).replace(/ /g,'_'));
+  await npAutoSave(d, 'word');
+});
+
+// ── LƯU đơn nghỉ phép ──
+document.getElementById('frm-np')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const d = npCollect();
+  const conlai = parseFloat(d.phepNam||0) - parseFloat(d.phepDaDung||0) - parseFloat(d.soNgay||0);
+  if (conlai < 0) {
+    if (!confirm('⚠️ Số ngày xin nghỉ vượt quá phép còn lại! Vẫn tiếp tục lưu?')) return;
+  }
+  try {
+    const r = await fetch(NP_API + '.json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...d, nguon: 'luu', createdAt: new Date().toISOString() })
+    });
+    if (!r.ok) throw 0;
+    this.reset();
+    document.getElementById('np-phep-conlai').style.display = 'none';
+    npBind();
+    await npLoad();
+    alert(`✅ Đã lưu đơn nghỉ phép của ${d.nguoiXin} thành công!`);
+  } catch { alert('❌ Lưu thất bại! Kiểm tra kết nối mạng.'); }
+});
+
+// ── Auto save ──
+async function npAutoSave(d, nguon) {
+  try {
+    await fetch(NP_API + '.json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...d, nguon, createdAt: new Date().toISOString() })
+    });
+    await npLoad();
+  } catch(e) { console.error('npAutoSave:', e); }
+}
+
+// ── Load ──
+async function npLoad() {
+  try {
+    const r = await fetch(NP_API + '.json');
+    const d = await r.json();
+    let a = [];
+    if (d && typeof d === 'object') for (let k in d) a.push({ id: k, ...d[k] });
+    a.sort((x, y) => new Date(y.createdAt||0) - new Date(x.createdAt||0));
+    window.npRec = a;
+
+    // Stats
+    const now = new Date();
+    const thangNay = a.filter(i => {
+      const dd = new Date(i.createdAt);
+      return dd.getMonth() === now.getMonth() && dd.getFullYear() === now.getFullYear();
+    });
+    const totalDays = thangNay.reduce((s, i) => s + (parseFloat(i.soNgay)||0), 0);
+    document.getElementById('np-stat-total').textContent = a.length;
+    document.getElementById('np-stat-month').textContent = thangNay.length;
+    document.getElementById('np-stat-days').textContent = totalDays;
+
+    npRenderTable(a);
+    npRenderChart(a);
+  } catch(e) {
+    const tb = document.getElementById('np-tbody');
+    if (tb) tb.innerHTML = '<tr><td colspan="6" class="empty" style="color:var(--red)">Lỗi kết nối!</td></tr>';
+  }
+}
+
+// ── Render table ──
+function npRenderTable(a) {
+  const filterTen = document.getElementById('np-filterTen')?.value || '';
+  const filterThang = document.getElementById('np-filterThang')?.value || '';
+  let filtered = a;
+  if (filterTen) filtered = filtered.filter(i => i.nguoiXin === filterTen);
+  if (filterThang) {
+    const [yyyy, mm] = filterThang.split('-');
+    filtered = filtered.filter(i => {
+      const dd = new Date(i.createdAt);
+      return dd.getMonth()+1 === +mm && dd.getFullYear() === +yyyy;
+    });
+  }
+  const tb = document.getElementById('np-tbody');
+  if (!tb) return;
+  if (!filtered.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">Không có đơn nào</td></tr>'; return; }
+  tb.innerHTML = '';
+  filtered.forEach(i => {
+    const tungay = i.tuNgay ? npFd(i.tuNgay) : '?';
+    const denngay = i.denNgay ? npFd(i.denNgay) : '?';
+    const thoigian = i.tuNgay && i.denNgay && i.tuNgay === i.denNgay
+      ? tungay : `${tungay} → ${denngay}`;
+    const nguonMap = { in:'🖨 In', word:'📄 Word', luu:'💾 Lưu' };
+    const nguonBadge = i.nguon ? `<br><span style="font-size:.6rem;color:var(--muted)">${nguonMap[i.nguon]||''}</span>` : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-label="Ngày tạo">${new Date(i.createdAt).toLocaleDateString('vi-VN')}<br>
+        <small style="color:var(--muted)">${new Date(i.createdAt).toLocaleTimeString('vi-VN')}</small>${nguonBadge}</td>
+      <td data-label="Người làm đơn"><strong>${i.nguoiXin}</strong><br><small style="color:var(--muted)">${i.chucVu||''}</small></td>
+      <td data-label="Thời gian">${thoigian}</td>
+      <td data-label="Số ngày" style="text-align:center"><span style="font-size:1.1rem;font-weight:700;color:#c084fc">${i.soNgay||'?'}</span><br><small style="color:var(--muted)">ngày</small></td>
+      <td data-label="Lý do">${i.lyDo||''}<br><small style="color:var(--muted)">${i.noiNghi ? '📍 '+i.noiNghi : ''}</small></td>
+      <td data-label="Thao tác" class="td-act">
+        <button class="bw" onclick="npExpOld('${i.id}')">📄 Word</button>
+        <button class="bd" onclick="npDel('${i.id}')">🗑</button>
+      </td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ── Chart ──
+function npRenderChart(a) {
+  const canvas = document.getElementById('np-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const now = new Date();
+  const labels = [], dataCount = [], dataDays = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    labels.push(`${d.toLocaleString('vi-VN',{month:'short'})} ${d.getFullYear()}`);
+    const thang = a.filter(x => {
+      const xd = new Date(x.createdAt);
+      return xd.getMonth()===d.getMonth() && xd.getFullYear()===d.getFullYear();
+    });
+    dataCount.push(thang.length);
+    dataDays.push(thang.reduce((s,x) => s+(parseFloat(x.soNgay)||0), 0));
+  }
+  if (npChart) npChart.destroy();
+  npChart = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Số đơn', data:dataCount, backgroundColor:'rgba(192,132,252,0.6)', borderColor:'#c084fc', borderWidth:1.5, borderRadius:3 },
+        { label:'Số ngày', data:dataDays, backgroundColor:'rgba(0,214,143,0.4)', borderColor:'#00d68f', borderWidth:1.5, borderRadius:3 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#4a7fa8', font:{size:11}, boxWidth:12 } } },
+      scales:{
+        x:{ ticks:{color:'#2a5080',font:{size:10}}, grid:{color:'rgba(0,40,80,0.3)'} },
+        y:{ ticks:{color:'#2a5080',font:{size:10},stepSize:1}, grid:{color:'rgba(0,40,80,0.3)'}, beginAtZero:true }
+      }
+    }
+  });
+
+  // Thống kê nhân viên
+  const el = document.getElementById('np-thongke');
+  if (!el) return;
+  const thangNay = a.filter(i => {
+    const dd = new Date(i.createdAt);
+    return dd.getMonth()===now.getMonth() && dd.getFullYear()===now.getFullYear();
+  });
+  const counter = {};
+  thangNay.forEach(i => { counter[i.nguoiXin] = (counter[i.nguoiXin]||0) + (parseFloat(i.soNgay)||0); });
+  const sorted = Object.entries(counter).sort((a,b) => b[1]-a[1]);
+  if (!sorted.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.8rem;text-align:center;padding:1rem">Chưa có dữ liệu</div>'; return; }
+  el.innerHTML = sorted.map(([ten, so]) => `
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <span style="font-size:.78rem;color:var(--text)">${ten}</span>
+        <span style="font-size:.75rem;font-weight:700;color:#c084fc">${so} ngày</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── Filter ──
+window.npApplyFilter = function() { npRenderTable(window.npRec); };
+window.npClearFilter = function() {
+  document.getElementById('np-filterTen').value = '';
+  document.getElementById('np-filterThang').value = '';
+  npRenderTable(window.npRec);
+};
+
+// ── Delete ──
+window.npDel = async function(id) {
+  if (!confirm('Xóa đơn nghỉ phép này?')) return;
+  try { await fetch(NP_API+'/'+id+'.json', {method:'DELETE'}); await npLoad(); }
+  catch { alert('Lỗi xóa!'); }
+};
+
+// ── Export old ──
+window.npExpOld = function(id) {
+  const r = window.npRec.find(x => x.id === id);
+  if (!r) return;
+  npExpDocx(r, 'Don_Nghi_Phep_' + tc(r.nguoiXin||'Moi').replace(/ /g,'_'));
+};
+
+// ── Export DOCX nghỉ phép ──
+async function npExpDocx(d, fn) {
+  if (typeof JSZip === 'undefined') { alert('JSZip chưa tải!'); return; }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function run(t, o){ o=o||{}; return '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'+(o.bold?'<w:b/><w:bCs/>':'')+(o.ul?'<w:u w:val="single"/>':'')+(o.italic?'<w:i/><w:iCs/>':'')+'<w:sz w:val="'+(o.sz||28)+'"/><w:szCs w:val="'+(o.sz||28)+'"/></w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>'; }
+  function para(arr, o){ o=o||{}; return '<w:p><w:pPr><w:jc w:val="'+(o.jc||'both')+'\"/>'+(o.ind?'<w:ind w:firstLine="709\"/>':'')+'<w:spacing w:after="0" w:line="276" w:lineRule="auto"/></w:pPr>'+arr.map(x=>run(x.t,x)).join('')+'</w:p>'; }
+  function el(){ return '<w:p><w:pPr><w:spacing w:after="0" w:line="180" w:lineRule="exact"/></w:pPr></w:p>'; }
+  const nb='<w:tblBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tblBorders>';
+  function cell(c,w){ return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/><w:tcBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tcBorders></w:tcPr>'+c+'</w:tc>'; }
+  function cp(arr){ return para(arr,{jc:'center'}); }
+
+  const TW=9354, W=3118;
+  const now = new Date();
+  const ng = (d.ng||now.getDate().toString().padStart(2,'0'));
+  const th = (d.th||(now.getMonth()+1).toString().padStart(2,'0'));
+  const na = (d.na||now.getFullYear().toString());
+  const pda = (d.phepDaDung||'0').toString().padStart(2,'0');
+
+  let ngaynghi = '';
+  if (d.tuNgay && d.denNgay && d.tuNgay === d.denNgay) {
+    ngaynghi = 'ngày ' + npFd(d.tuNgay);
+  } else if (d.tuNgay && d.denNgay) {
+    ngaynghi = 'từ ngày ' + npFd(d.tuNgay) + ' đến ngày ' + npFd(d.denNgay);
+  }
+
+  // Bảng header 2 cột
+  const headerTbl = '<w:tbl><w:tblPr><w:tblW w:w="'+TW+'" w:type="dxa"/>'+nb+'<w:jc w:val="center"/></w:tblPr>'
+    +'<w:tblGrid><w:gridCol w:w="4677"/><w:gridCol w:w="4677"/></w:tblGrid>'
+    +'<w:tr>'
+    +cell(cp([{t:'TRUNG TÂM QUẢN LÝ',bold:true}])+''+cp([{t:'ĐIỀU HÀNH GIAO THÔNG ĐÔ THỊ',bold:true}])+''+cp([{t:'ĐỘI VẬN HÀNH, BẢO TRÌ ĐƯỜNG HẦM',bold:true,ul:true}]), 4677)
+    +cell(cp([{t:'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM',bold:true}])+''+cp([{t:'Độc lập – Tự do – Hạnh phúc',bold:true,ul:true}]), 4677)
+    +'</w:tr></w:tbl>';
+
+  // Bảng chữ ký 3 cột
+  const emptyRow = '<w:tr>'+cell(el(),W)+cell(el(),W)+cell(el(),W)+'</w:tr>';
+  const sigTbl = '<w:tbl><w:tblPr><w:tblW w:w="'+TW+'" w:type="dxa"/>'+nb+'</w:tblPr>'
+    +'<w:tblGrid><w:gridCol w:w="'+W+'"/><w:gridCol w:w="'+W+'"/><w:gridCol w:w="'+W+'"/></w:tblGrid>'
+    +'<w:tr>'+cell(cp([{t:'TRƯỞNG PHÒNG TCHC',bold:true}]),W)+cell(cp([{t:'ĐỘI TRƯỞNG',bold:true}]),W)+cell(cp([{t:'NGƯỜI LÀM ĐƠN',bold:true}]),W)+'</w:tr>'
+    +emptyRow+emptyRow+emptyRow+emptyRow+emptyRow
+    +'<w:tr>'+cell(cp([{t:'Trịnh Thị Kim Châu',bold:true}]),W)+cell(cp([{t:'Nguyễn Văn Trung',bold:true}]),W)+cell(cp([{t:tc(d.nguoiXin||''),bold:true}]),W)+'</w:tr>'
+    +'</w:tbl>';
+
+  // Bảng giám đốc
+  const emptyRow1 = '<w:tr><w:tc><w:tcPr><w:tcW w:w="'+TW+'" w:type="dxa"/><w:tcBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tcBorders></w:tcPr>'+el()+'</w:tc></w:tr>';
+  const gdTbl = '<w:tbl><w:tblPr><w:tblW w:w="'+TW+'" w:type="dxa"/>'+nb+'</w:tblPr>'
+    +'<w:tblGrid><w:gridCol w:w="'+TW+'"/></w:tblGrid>'
+    +'<w:tr><w:tc><w:tcPr><w:tcW w:w="'+TW+'" w:type="dxa"/><w:tcBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tcBorders></w:tcPr>'+cp([{t:'GIÁM ĐỐC',bold:true}])+'</w:tc></w:tr>'
+    +emptyRow1+emptyRow1+emptyRow1+emptyRow1
+    +'</w:tbl>';
+
+  const body = headerTbl
+    + el()
+    + para([{t:'Thành phố Hồ Chí Minh, ngày '+ng+' tháng '+th+' năm '+na+'.',italic:true}],{jc:'right'})
+    + el()
+    + para([{t:'ĐƠN XIN NGHỈ PHÉP',bold:true,sz:32}],{jc:'center'})
+    + el()
+    + para([{t:'Kính gửi:',bold:true}],{jc:'both'})
+    + para([{t:'- Giám đốc Trung tâm.'}],{jc:'both'})
+    + para([{t:'- Trưởng Phòng Tổ chức hành chính.'}],{jc:'both'})
+    + para([{t:'- Đội trưởng Đội Vận hành, bảo trì đường hầm.'}],{jc:'both'})
+    + el()
+    + para([{t:'Tôi tên là: '},{t:d.nguoiXin||''}],{ind:true})
+    + para([{t:'Chức vụ: '},{t:d.chucVu||'.....................'}],{ind:true})
+    + para([{t:'Bộ phận công tác: Đội Vận hành, bảo trì đường hầm.'}],{ind:true})
+    + para([{t:'Thời gian làm việc tại Trung tâm: '},{t:d.thamNien||'...'},{t:' năm.'}],{ind:true})
+    + para([{t:'Số ngày phép được hưởng trong năm '},{t:na},{t:': '},{t:d.phepNam||'...'},{t:' ngày.'}],{ind:true})
+    + para([{t:'Số ngày phép đã sử dụng: '},{t:pda},{t:' ngày.'}],{ind:true})
+    + para([{t:'Số ngày xin nghỉ phép: '},{t:d.soNgay||'...'},{t:' ngày.'}],{ind:true})
+    + para([{t:'Kính đề nghị: Giám đốc Trung tâm, trưởng Phòng Tổ chức hành chính, Đội trưởng Đội Vận hành, bảo trì đường hầm xem xét giải quyết cho tôi được nghỉ phép: '},{t:d.soNgay||'...'},{t:' ngày, '},{t:ngaynghi||'.....................'},{t:'..'}],{ind:true})
+    + para([{t:'Lý do nghỉ phép: '},{t:d.lyDo||'.....................'}],{ind:true})
+    + para([{t:'Nơi nghỉ phép: '},{t:d.noiNghi||'.....................'}],{ind:true})
+    + para([{t:'Kính mong được sự chấp thuận.'}],{ind:true})
+    + el() + el()
+    + sigTbl
+    + el()
+    + gdTbl
+    + '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="851" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr>';
+
+  const docX='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+'</w:body></w:document>';
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+  const rm='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  const rd='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml',ct); zip.file('_rels/.rels',rm); zip.file('word/document.xml',docX); zip.file('word/_rels/document.xml.rels',rd);
+  const blob = await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  document.body.appendChild(a); a.style.display='none'; a.href=url; a.download=fn+'.docx'; a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
+}

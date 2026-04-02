@@ -698,3 +698,22 @@ tbody tr:hover td{background:rgba(0,80,160,0.08)}
   border-radius:4px;padding:6px 10px;margin:4px 0;
   font-size:.78rem;color:#6ee7b7;
 }
+
+/* ===== MODULE TABS ===== */
+.module-tabs{display:flex;gap:8px;padding:.6rem 2rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border)}
+.mod-tab{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:7px 24px;border-radius:4px;font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
+.mod-tab:hover{border-color:rgba(0,180,255,.4);color:var(--accent)}
+.mod-active{background:rgba(0,180,255,.12)!important;border-color:var(--accent)!important;color:var(--accent)!important;box-shadow:0 0 10px rgba(0,180,255,.15)}
+#tab-nghiphep.mod-active{background:rgba(192,132,252,.12)!important;border-color:#c084fc!important;color:#c084fc!important;box-shadow:0 0 10px rgba(192,132,252,.2)!important}
+
+/* ===== NGHỈ PHÉP PRINT ===== */
+#np-pA{display:none}
+@media print{
+  #np-pA{display:block}
+  #pA{display:none}
+}
+.np-sig-area{margin-top:20px}
+.np-sig-tbl{width:100%;border-collapse:collapse;text-align:center;font-size:12pt}
+.np-sig-tbl td{padding:2px 4px;border:none}
+.np-sig-space td{height:13px}
+.np-giamdoc{text-align:center;margin-top:16px;font-size:12pt}

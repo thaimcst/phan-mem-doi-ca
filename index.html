@@ -81,6 +81,12 @@
     </div>
   </header>
 
+  <!-- ── MODULE TABS ── -->
+  <div class="module-tabs">
+    <button class="mod-tab mod-active" id="tab-doica" onclick="switchModule('doica')">🔄 ĐỔI CA</button>
+    <button class="mod-tab" id="tab-nghiphep" onclick="switchModule('nghiphep')">📋 NGHỈ PHÉP</button>
+  </div>
+
   <!-- ── HERO STRIP ── -->
   <div class="hero">
     <div class="hero-left">
@@ -89,14 +95,20 @@
       </div>
       <div class="hero-title">QUẢN LÝ ĐỔI CA</div>
     </div>
-    <div class="hero-stats">
+    <div class="hero-stats" id="hstats-dc">
       <div class="hstat"><div class="hstat-num" id="stat-total">—</div><div class="hstat-lbl">Tổng đơn</div></div>
       <div class="hstat"><div class="hstat-num" id="stat-month">—</div><div class="hstat-lbl">Tháng này</div></div>
       <div class="hstat"><div class="hstat-num" id="stat-today">—</div><div class="hstat-lbl">Hôm nay</div></div>
     </div>
+    <div class="hero-stats" id="hstats-np" style="display:none">
+      <div class="hstat"><div class="hstat-num" id="np-stat-total">—</div><div class="hstat-lbl">Tổng đơn NP</div></div>
+      <div class="hstat"><div class="hstat-num" id="np-stat-month">—</div><div class="hstat-lbl">Tháng này</div></div>
+      <div class="hstat"><div class="hstat-num" id="np-stat-days">—</div><div class="hstat-lbl">Ngày nghỉ / tháng</div></div>
+    </div>
   </div>
 
   <!-- ── MAIN ── -->
+  <div id="mod-doica">
   <div class="main">
 
     <!-- Left: Form -->
@@ -286,12 +298,174 @@
         </div>
       </div>
 
+  </div><!-- end .main doica -->
+  </div><!-- end #mod-doica -->
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODULE: NGHỈ PHÉP                          -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="mod-nghiphep" style="display:none">
+  <div class="main">
+
+    <!-- LEFT: Form nghỉ phép -->
+    <div class="col-left">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-title-icon" style="background:#c084fc;box-shadow:0 0 8px #c084fc40"></div>TẠO ĐƠN NGHỈ PHÉP</div>
+          <div class="panel-tag">FORM</div>
+        </div>
+        <div class="panel-inner">
+        <form id="frm-np">
+
+          <!-- Người viết đơn -->
+          <div class="field">
+            <label>Người làm đơn</label>
+            <select id="np-nx" required>
+              <option value="" disabled selected>— Chọn tên —</option>
+              <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
+            </select>
+          </div>
+
+          <!-- Chức vụ -->
+          <div class="row2">
+            <div class="field">
+              <label>Chức vụ</label>
+              <select id="np-chucvu" required>
+                <option value="" disabled selected>— Chọn —</option>
+                <option value="Kỹ sư">Kỹ sư</option>
+                <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                <option value="Trưởng ca">Trưởng ca</option>
+                <option value="Nhân viên vận hành">Nhân viên vận hành</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Thâm niên (năm)</label>
+              <input type="number" id="np-thamnien" placeholder="VD: 7" min="0" step="1">
+            </div>
+          </div>
+
+          <!-- Số ngày phép -->
+          <div class="person-block pb-1" style="margin-top:.5rem">
+            <div class="person-block-accent" style="background:linear-gradient(180deg,#c084fc,#7c3aed)"></div>
+            <div class="sec-label"><div class="sec-label-dot" style="background:#c084fc;box-shadow:0 0 6px #c084fc80"></div>Thông tin ngày phép</div>
+            <div class="row2">
+              <div class="field">
+                <label>Phép được hưởng / năm</label>
+                <input type="number" id="np-phepduochhuong" placeholder="VD: 13" min="1" required>
+              </div>
+              <div class="field">
+                <label>Phép đã sử dụng</label>
+                <input type="number" id="np-phepdaosudung" placeholder="VD: 0" min="0" value="0" required>
+              </div>
+            </div>
+            <div class="field">
+              <label>Số ngày xin nghỉ</label>
+              <input type="number" id="np-songaynghi" placeholder="VD: 2" min="1" step="1" required>
+              <div id="np-phep-conlai" style="display:none;margin-top:5px;padding:6px 10px;border-radius:4px;font-size:.75rem;font-weight:600"></div>
+            </div>
+          </div>
+
+          <!-- Thời gian nghỉ -->
+          <div class="person-block" style="margin-top:.75rem">
+            <div class="person-block-accent" style="background:linear-gradient(180deg,#00b4ff,#0066cc)"></div>
+            <div class="sec-label"><div class="sec-label-dot"></div>Thời gian nghỉ phép</div>
+            <div class="row2">
+              <div class="field"><label>Từ ngày</label><input type="date" id="np-tungay" required></div>
+              <div class="field"><label>Đến ngày</label><input type="date" id="np-denngay" required></div>
+            </div>
+          </div>
+
+          <!-- Lý do & nơi nghỉ -->
+          <div class="field" style="margin-top:.9rem">
+            <label>Lý do nghỉ phép</label>
+            <input type="text" id="np-lydo" required placeholder="VD: Nghỉ phép thường niên">
+          </div>
+          <div class="field">
+            <label>Nơi nghỉ phép</label>
+            <input type="text" id="np-noinghi" required placeholder="VD: Hà Tĩnh">
+          </div>
+
+          <!-- Người trực thay -->
+          <div class="field">
+            <label>Người trực thay (bàn giao công việc)</label>
+            <select id="np-nguoithay">
+              <option value="">— Không ghi người thay —</option>
+              <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" id="np-btnWord" class="btn btn-word">📄 WORD</button>
+            <button type="button" id="np-btnPrint" class="btn btn-print">🖨 IN</button>
+            <button type="submit" class="btn btn-save">💾 LƯU ĐƠN</button>
+          </div>
+        </form>
+        </div>
+      </div>
     </div>
 
-  </div>
-</div>
+    <!-- RIGHT: Bảng lịch sử nghỉ phép -->
+    <div class="col-right">
 
-<!-- PRINT AREA -->
+      <!-- Thống kê -->
+      <div class="panel" style="margin-bottom:1.5rem">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-title-icon" style="background:#c084fc"></div>THỐNG KÊ NGHỈ PHÉP</div>
+          <div class="panel-tag">ANALYTICS</div>
+        </div>
+        <div style="display:flex;gap:1.25rem;padding:1rem 1.5rem">
+          <div style="flex:1.6;min-width:0">
+            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Đơn nghỉ phép 6 tháng gần nhất</div>
+            <div style="height:160px;position:relative"><canvas id="np-chart"></canvas></div>
+          </div>
+          <div style="flex:1;min-width:150px;border-left:1px solid var(--border);padding-left:1.25rem">
+            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Ngày nghỉ tháng này</div>
+            <div id="np-thongke" style="max-height:160px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-title-icon" style="background:#c084fc"></div>LỊCH SỬ ĐƠN NGHỈ PHÉP</div>
+          <div class="panel-tag">DATABASE</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2)">
+          <div style="font-size:.62rem;color:var(--muted);letter-spacing:1px;white-space:nowrap">LỌC:</div>
+          <select id="np-filterTen" onchange="npApplyFilter()" style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit">
+            <option value="">— Tất cả nhân viên —</option>
+            <option>Nguyễn Phương</option><option>Nguyễn Nhật Tiến</option><option>Đoàn Văn Hạnh</option><option>Nguyễn Minh Thảo</option><option>Dương Đại Nghĩa</option><option>Phan Quốc Nhật</option><option>Nguyễn Minh Trung</option><option>Nguyễn Thanh Thuận</option><option>Võ Tấn Nghĩa</option><option>Nguyễn Văn Hậu</option><option>Võ Văn Hoài</option><option>Nguyễn Quốc Thái</option><option>Phạm Bá Quỳnh</option><option>Trần Minh Tân</option><option>Nguyễn Hoài Nam</option><option>Hồ Trung Hiếu</option><option>Đặng Thái Nguyên</option><option>Phan Hoàng Thanh</option><option>Hồng Mạnh Thái</option><option>Bùi Văn Hùng</option><option>Đặng Ngọc Hòa</option><option>Nguyễn Thành Long</option><option>Trần Hải Dương</option><option>Ngụy Huỳnh Trung</option><option>Phạm Anh Tuấn</option><option>Võ Đông Đức</option><option>Huỳnh Hiếu Thịnh</option><option>Bùi Đình Khánh</option><option>Nguyễn Thành Tâm</option><option>Trần Quang Vinh</option><option>Nguyễn Huỳnh</option><option>Nguyễn Ngọc Duy</option>
+          </select>
+          <input id="np-filterThang" type="month" onchange="npApplyFilter()" style="background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:3px;font-size:.78rem;font-family:inherit;width:140px">
+          <button onclick="npClearFilter()" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:3px;font-size:.72rem;cursor:pointer;font-family:inherit;white-space:nowrap">✕ Xóa lọc</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Ngày tạo</th>
+              <th>Người làm đơn</th>
+              <th>Thời gian nghỉ</th>
+              <th>Số ngày</th>
+              <th>Lý do / Nơi nghỉ</th>
+              <th>Thao tác</th>
+            </tr></thead>
+            <tbody id="np-tbody">
+              <tr><td colspan="6" class="empty">⏳ ĐANG TẢI DỮ LIỆU...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end .main nghiphep -->
+  </div><!-- end #mod-nghiphep -->
+
+</div><!-- end .no-print -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PRINT AREA: ĐỔI CA (giữ nguyên)           -->
+<!-- ══════════════════════════════════════════ -->
 <div id="pA" class="print-area">
   <div class="ph"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b><br><span class="ul">Độc lập – Tự do – Hạnh phúc</span></div>
   <div class="pd"><i>TP. Hồ Chí Minh, ngày <span id="p_ng"></span> tháng <span id="p_th"></span> năm <span id="p_na"></span>.</i></div>
@@ -325,6 +499,71 @@
       <div class="sig-box"><span>Người viết đơn</span><span class="sig-name" id="p_nxk2"></span></div>
     </div>
     <div class="sig-mid"><div><span>Đội trưởng</span><span class="sig-mid-name">Nguyễn Văn Trung</span></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PRINT AREA: NGHỈ PHÉP (theo mẫu BNV)      -->
+<!-- ══════════════════════════════════════════ -->
+<div id="np-pA" class="print-area">
+  <!-- Header trái + phải -->
+  <div style="display:table;width:100%;margin-bottom:4px">
+    <div style="display:table-cell;width:45%;vertical-align:top;font-size:12pt;line-height:1.4">
+      <div style="font-weight:bold;text-align:center">TRUNG TÂM QUẢN LÝ</div>
+      <div style="font-weight:bold;text-align:center">ĐIỀU HÀNH GIAO THÔNG ĐÔ THỊ</div>
+      <div style="font-weight:bold;text-align:center;text-decoration:underline">ĐỘI VẬN HÀNH, BẢO TRÌ ĐƯỜNG HẦM</div>
+    </div>
+    <div style="display:table-cell;width:55%;vertical-align:top;text-align:center;font-size:12pt;line-height:1.4">
+      <div style="font-weight:bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+      <div style="font-weight:bold;text-decoration:underline">Độc lập – Tự do – Hạnh phúc</div>
+    </div>
+  </div>
+  <div class="pd"><i>Thành phố Hồ Chí Minh, ngày <span id="np_p_ng"></span> tháng <span id="np_p_th"></span> năm <span id="np_p_na"></span>.</i></div>
+  <div class="pt">ĐƠN XIN NGHỈ PHÉP</div>
+  <div class="pc" style="margin-bottom:4px">
+    <div><b>Kính gửi:</b></div>
+    <div style="padding-left:1.5cm">- Giám đốc Trung tâm.</div>
+    <div style="padding-left:1.5cm">- Trưởng Phòng Tổ chức hành chính.</div>
+    <div style="padding-left:1.5cm">- Đội trưởng Đội Vận hành, bảo trì đường hầm.</div>
+  </div>
+  <div class="pc">
+    <p>Tôi tên là: <span id="np_p_nx"></span>.</p>
+    <p>Chức vụ: <span id="np_p_chucvu"></span>.</p>
+    <p>Bộ phận công tác: Đội Vận hành, bảo trì đường hầm.</p>
+    <p>Thời gian làm việc tại Trung tâm: <span id="np_p_thamnien"></span> năm.</p>
+    <p>Số ngày phép được hưởng trong năm <span id="np_p_nam"></span>: <span id="np_p_phepnam"></span> ngày.</p>
+    <p>Số ngày phép đã sử dụng: <span id="np_p_phepdaosudung"></span> ngày.</p>
+    <p>Số ngày xin nghỉ phép: <span id="np_p_songay"></span> ngày.</p>
+    <p>Kính đề nghị: Giám đốc Trung tâm, trưởng Phòng Tổ chức hành chính, Đội trưởng Đội Vận hành, bảo trì đường hầm xem xét giải quyết cho tôi được nghỉ phép: <span id="np_p_songay2"></span> ngày, <span id="np_p_ngaynghi"></span>.</p>
+    <p>Lý do nghỉ phép: <span id="np_p_lydo"></span>.</p>
+    <p>Nơi nghỉ phép: <span id="np_p_noinghi"></span>.</p>
+    <p>Kính mong được sự chấp thuận.</p>
+  </div>
+
+  <!-- Chữ ký 4 vị trí theo đúng mẫu -->
+  <div class="np-sig-area">
+    <table class="np-sig-tbl">
+      <tr>
+        <td><b>TRƯỞNG PHÒNG TCHC</b></td>
+        <td><b>ĐỘI TRƯỞNG</b></td>
+        <td><b>NGƯỜI LÀM ĐƠN</b></td>
+      </tr>
+      <tr class="np-sig-space"><td></td><td></td><td></td></tr>
+      <tr class="np-sig-space"><td></td><td></td><td></td></tr>
+      <tr class="np-sig-space"><td></td><td></td><td></td></tr>
+      <tr class="np-sig-space"><td></td><td></td><td></td></tr>
+      <tr class="np-sig-space"><td></td><td></td><td></td></tr>
+      <tr>
+        <td><b>Trịnh Thị Kim Châu</b></td>
+        <td><b>Nguyễn Văn Trung</b></td>
+        <td><b><span id="np_p_nxk"></span></b></td>
+      </tr>
+    </table>
+    <!-- Giám đốc riêng dưới giữa -->
+    <div class="np-giamdoc">
+      <div><b>GIÁM ĐỐC</b></div>
+      <div style="height:40px"></div>
+    </div>
   </div>
 </div>
 
