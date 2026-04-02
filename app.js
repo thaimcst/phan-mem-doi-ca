@@ -998,12 +998,10 @@ async function sendAI() {
   if (AI_HISTORY.length > 10) AI_HISTORY.splice(0, 2);
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
         system: buildContext(),
         messages: AI_HISTORY
       })
