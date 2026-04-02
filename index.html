@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Đổi Ca | UTMC — Đường Hầm TP.HCM</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300b4ff'/%3E%3Cstop offset='100%25' stop-color='%230066cc'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d68f'/%3E%3Cstop offset='100%25' stop-color='%2300996a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='36' height='36' rx='8' fill='%23060e1e'/%3E%3Ccircle cx='18' cy='18' r='16' fill='%2308142a' stroke='url(%23a)' stroke-width='1.5'/%3E%3Ccircle cx='18' cy='18' r='12' fill='%23040c1a'/%3E%3Cpath d='M11 15 C11 9 15.5 7 18 9.5' fill='none' stroke='%2300b4ff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpolygon points='18,5.5 18,13.5 23,9.5' fill='%2300b4ff'/%3E%3Cpath d='M25 21 C25 27 20.5 29 18 26.5' fill='none' stroke='%2300d68f' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpolygon points='18,30.5 18,22.5 13,26.5' fill='%2300d68f'/%3E%3Ccircle cx='18' cy='18' r='2.2' fill='%2300b4ff' opacity='.9'/%3E%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -23,7 +24,45 @@
   <header class="header">
     <div class="logo">
       <div class="logo-emblem">
-        <div class="logo-emblem-inner">🚇</div>
+        <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="display:block">
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00b4ff"/>
+              <stop offset="100%" stop-color="#0055cc"/>
+            </linearGradient>
+            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00e09a"/>
+              <stop offset="100%" stop-color="#008855"/>
+            </linearGradient>
+          </defs>
+          <!-- Outer glow ring -->
+          <circle cx="22" cy="22" r="20" fill="none" stroke="url(#lg1)" stroke-width="0.8" opacity="0.4"/>
+          <!-- Main ring -->
+          <circle cx="22" cy="22" r="18" fill="#08142a" stroke="url(#lg1)" stroke-width="2"/>
+          <!-- Inner dark -->
+          <circle cx="22" cy="22" r="13" fill="#040c1a"/>
+          <!-- Tunnel rings (đường hầm) -->
+          <ellipse cx="22" cy="22" rx="9" ry="7.5" fill="none" stroke="#0d2a50" stroke-width="0.8"/>
+          <ellipse cx="22" cy="22" rx="5" ry="4" fill="#00b4ff" opacity="0.1"/>
+          <!-- Tick marks clock-style -->
+          <line x1="22" y1="4"  x2="22" y2="7"  stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+          <line x1="22" y1="37" x2="22" y2="40" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+          <line x1="4"  y1="22" x2="7"  y2="22" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+          <line x1="37" y1="22" x2="40" y2="22" stroke="#00b4ff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+          <line x1="9"  y1="9"  x2="11" y2="11" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+          <line x1="35" y1="9"  x2="33" y2="11" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+          <line x1="9"  y1="35" x2="11" y2="33" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+          <line x1="35" y1="35" x2="33" y2="33" stroke="#00b4ff" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+          <!-- Arrow 1: blue (trên) -->
+          <path d="M13 18 C13 11, 18 8.5, 22 11.5" fill="none" stroke="url(#lg1)" stroke-width="2.8" stroke-linecap="round"/>
+          <polygon points="22,7 22,16 28,11.5" fill="#00b4ff"/>
+          <!-- Arrow 2: teal (dưới) -->
+          <path d="M31 26 C31 33, 26 35.5, 22 32.5" fill="none" stroke="url(#lg2)" stroke-width="2.8" stroke-linecap="round"/>
+          <polygon points="22,37 22,28 16,32.5" fill="#00e09a"/>
+          <!-- Center dot -->
+          <circle cx="22" cy="22" r="2.8" fill="#00b4ff" opacity="0.95"/>
+          <circle cx="22" cy="22" r="1.2" fill="#ffffff" opacity="0.6"/>
+        </svg>
       </div>
       <div class="logo-info">
         <div class="logo-main">UTMC · Đường Hầm</div>

@@ -383,12 +383,82 @@ document.getElementById('btnWord').onclick = () => {
   expDocx(base, 'Don_Doi_Ca_' + tc(base.nx || 'Moi').replace(/ /g, '_'));
 };
 
+// ===== GIỚI HẠN ĐỔI CA =====
+const GIOI_HAN_THANG = 4;
+
+function demSoLanDoiTrongThang(records, tenNguoi) {
+  const now = new Date();
+  const thang = now.getMonth();
+  const nam = now.getFullYear();
+  return records.filter(r => {
+    if (r.nguoiXin !== tenNguoi) return false;
+    const d = new Date(r.createdAt);
+    return d.getMonth() === thang && d.getFullYear() === nam;
+  }).length;
+}
+
+function kiemTraGioiHan(tenNguoi) {
+  const soLan = demSoLanDoiTrongThang(window.rec, tenNguoi);
+  return {
+    soLan,
+    vuotGioiHan: soLan >= GIOI_HAN_THANG,
+    conLai: Math.max(0, GIOI_HAN_THANG - soLan)
+  };
+}
+
+// Cập nhật UI cảnh báo khi chọn người viết đơn
+function capNhatCanhBao() {
+  const nx = document.getElementById('nx').value;
+  let el = document.getElementById('gioi-han-warning');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'gioi-han-warning';
+    el.style.cssText = 'margin:8px 0 0;padding:9px 13px;border-radius:6px;font-size:0.8rem;font-weight:600;display:none;';
+    document.getElementById('nx').parentNode.appendChild(el);
+  }
+  if (!nx) { el.style.display = 'none'; return; }
+  const { soLan, vuotGioiHan, conLai } = kiemTraGioiHan(nx);
+  if (vuotGioiHan) {
+    el.style.display = 'block';
+    el.style.background = 'rgba(225,29,72,0.12)';
+    el.style.border = '1px solid rgba(225,29,72,0.3)';
+    el.style.color = '#fda4af';
+    el.innerHTML = `🚫 <strong>${nx}</strong> đã đổi ca <strong>${soLan}/${GIOI_HAN_THANG} lần</strong> trong tháng này. Không thể đổi thêm!`;
+  } else if (soLan >= GIOI_HAN_THANG - 1) {
+    el.style.display = 'block';
+    el.style.background = 'rgba(245,158,11,0.12)';
+    el.style.border = '1px solid rgba(245,158,11,0.3)';
+    el.style.color = '#fcd34d';
+    el.innerHTML = `⚠️ <strong>${nx}</strong> đã đổi <strong>${soLan}/${GIOI_HAN_THANG} lần</strong> — còn <strong>${conLai} lần</strong> trong tháng này.`;
+  } else if (soLan > 0) {
+    el.style.display = 'block';
+    el.style.background = 'rgba(0,180,255,0.08)';
+    el.style.border = '1px solid rgba(0,180,255,0.2)';
+    el.style.color = '#7ec8ff';
+    el.innerHTML = `ℹ️ <strong>${nx}</strong> đã đổi <strong>${soLan}/${GIOI_HAN_THANG} lần</strong> trong tháng — còn <strong>${conLai} lần</strong>.`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// Lắng nghe thay đổi người viết đơn
+document.getElementById('nx').addEventListener('change', capNhatCanhBao);
+
 // ===== SAVE FORM =====
 document.getElementById('frm').addEventListener('submit', async function (e) {
   e.preventDefault();
+  const tenNguoi = document.getElementById('nx').value;
   const has2 = document.getElementById('chk2').checked;
+
+  // Kiểm tra giới hạn 4 lần/tháng
+  const { soLan, vuotGioiHan } = kiemTraGioiHan(tenNguoi);
+  if (vuotGioiHan) {
+    alert(`🚫 ${tenNguoi} đã đổi ca ${soLan}/${GIOI_HAN_THANG} lần trong tháng này!\nKhông thể đổi ca thêm trong tháng này.`);
+    return;
+  }
+
   const o = {
-    nguoiXin: document.getElementById('nx').value,
+    nguoiXin: tenNguoi,
     nguoiDoi: document.getElementById('nd').value,
     caDi: document.getElementById('cdi').value + ' ngày ' + fd(document.getElementById('ddi').value),
     caVe: document.getElementById('cve').value + ' ngày ' + fd(document.getElementById('dve').value),
@@ -413,7 +483,8 @@ document.getElementById('frm').addEventListener('submit', async function (e) {
     document.getElementById('chk2').checked = false;
     document.getElementById('block2').style.display = 'none';
     bind(); load();
-    alert('✅ Đã lưu thành công!');
+    const conLai = GIOI_HAN_THANG - soLan - 1;
+    alert(`✅ Đã lưu thành công!\n📊 ${tenNguoi} còn ${conLai} lần đổi ca trong tháng này.`);
   } catch { alert('❌ Lưu thất bại!'); }
 });
 
@@ -433,6 +504,9 @@ async function load() {
     document.getElementById('stat-total').textContent = a.length;
     document.getElementById('stat-month').textContent = thisMonth.length;
     document.getElementById('stat-today').textContent = today.length;
+
+    // Cập nhật cảnh báo giới hạn sau khi có data
+    capNhatCanhBao();
     const tb = document.getElementById('tbody');
     if (!a.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Chưa có đơn nào</td></tr>'; return; }
     tb.innerHTML = '';
@@ -451,9 +525,18 @@ async function load() {
         : `<div class="ca-box"><span style="color:var(--red);font-size:.75rem">▲</span> ${i.caDi}</div>
            <div class="ca-box"><span style="color:var(--green);font-size:.75rem">▼</span> ${i.caVe}</div>`;
       const tr = document.createElement('tr');
+      // Đếm số lần đổi ca trong tháng của người này
+      const thangDon = new Date(i.createdAt);
+      const soLanThang = a.filter(x =>
+        x.nguoiXin === i.nguoiXin &&
+        new Date(x.createdAt).getMonth() === thangDon.getMonth() &&
+        new Date(x.createdAt).getFullYear() === thangDon.getFullYear()
+      ).length;
+      const limitColor = soLanThang >= GIOI_HAN_THANG ? '#f43f5e' : soLanThang >= GIOI_HAN_THANG - 1 ? '#f59e0b' : '#00d68f';
+      const limitBadge = `<span style="font-size:0.68rem;color:${limitColor};margin-left:4px">[${soLanThang}/${GIOI_HAN_THANG}]</span>`;
       tr.innerHTML = `
         <td data-label="Ngày tạo">${new Date(i.createdAt).toLocaleDateString('vi-VN')}<br><small style="color:var(--muted)">${new Date(i.createdAt).toLocaleTimeString('vi-VN')}</small></td>
-        <td data-label="Người xin đổi"><strong>${i.nguoiXin}</strong><br>${lb}</td>
+        <td data-label="Người xin đổi"><strong>${i.nguoiXin}</strong>${limitBadge}<br>${lb}</td>
         <td data-label="Trực thay">${nguoiDoi}</td>
         <td data-label="Chi tiết ca">${caDetail}</td>
         <td data-label="Thao tác" class="td-act">
