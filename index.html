@@ -188,7 +188,51 @@
     <!-- Right: Table + Chart -->
     <div class="col-right">
 
-      <!-- Biểu đồ + Thống kê nhân viên -->
+      <!-- AI ASSISTANT PANEL -->
+      <div class="panel" style="margin-bottom:1.5rem" id="ai-panel">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-title-icon" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></div>TRỢ LÝ AI ĐỔI CA</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div id="ai-status" style="display:flex;align-items:center;gap:5px;font-size:.62rem;color:var(--green);letter-spacing:1px">
+              <div style="width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)"></div>
+              CLAUDE AI
+            </div>
+            <div class="panel-tag">BETA</div>
+          </div>
+        </div>
+
+        <!-- Quick action buttons -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;padding:.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.15)">
+          <button class="ai-quick-btn" onclick="aiQuick('phan-tich')">📊 Phân tích xu hướng</button>
+          <button class="ai-quick-btn" onclick="aiQuick('canh-bao')">⚠️ Cảnh báo bất thường</button>
+          <button class="ai-quick-btn" onclick="aiQuick('goi-y')">💡 Gợi ý đổi ca tốt nhất</button>
+          <button class="ai-quick-btn" onclick="aiQuick('tom-tat')">📋 Tóm tắt tháng này</button>
+        </div>
+
+        <!-- Chat area -->
+        <div id="ai-chat" style="height:240px;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:10px">
+          <div class="ai-msg-ai">
+            <div class="ai-msg-icon">🤖</div>
+            <div class="ai-msg-text">Xin chào! Tôi là trợ lý AI của hệ thống Quản lý Đổi Ca UTMC. Tôi có thể giúp bạn:<br>
+            • Phân tích xu hướng đổi ca<br>
+            • Phát hiện xung đột và bất thường<br>
+            • Gợi ý người đổi ca phù hợp<br>
+            • Tóm tắt và giải thích lịch sử<br><br>
+            Hỏi tôi bất cứ điều gì về lịch ca!</div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:8px;background:rgba(0,0,0,.15)">
+          <input id="ai-input" type="text" placeholder="Hỏi AI về lịch ca, đổi ca..."
+            style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:4px;font-family:inherit;font-size:.83rem"
+            onkeydown="if(event.key==='Enter')sendAI()">
+          <button onclick="sendAI()" id="ai-send-btn"
+            style="background:linear-gradient(135deg,#00b4ff,#0066cc);color:#fff;border:none;padding:8px 18px;border-radius:4px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+            GỬI ➤
+          </button>
+        </div>
+      </div>
       <div class="panel" style="margin-bottom:1.5rem">
         <div class="panel-header">
           <div class="panel-title"><div class="panel-title-icon"></div>THỐNG KÊ ĐỔI CA</div>

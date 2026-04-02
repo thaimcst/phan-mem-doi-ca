@@ -902,3 +902,167 @@ async function expDocx(d, fn) {
 // ===== INIT =====
 load();
 bind();
+
+// ===== AI ASSISTANT =====
+const AI_HISTORY = [];
+
+function buildContext() {
+  const now = new Date();
+  const thangNay = window.rec.filter(i => {
+    const d = new Date(i.createdAt);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  // Thống kê ai đổi nhiều nhất
+  const counter = {};
+  window.rec.forEach(i => { counter[i.nguoiXin] = (counter[i.nguoiXin] || 0) + 1; });
+  const topDoi = Object.entries(counter).sort((a,b) => b[1]-a[1]).slice(0,5);
+
+  // Thống kê theo tháng
+  const byMonth = {};
+  window.rec.forEach(i => {
+    const d = new Date(i.createdAt);
+    const key = `${d.getMonth()+1}/${d.getFullYear()}`;
+    byMonth[key] = (byMonth[key] || 0) + 1;
+  });
+
+  // Cảnh báo giới hạn tháng này
+  const canh_bao = [];
+  thangNay.forEach(i => {
+    const so = thangNay.filter(x => x.nguoiXin === i.nguoiXin).length;
+    if (so >= GIOI_HAN_THANG && !canh_bao.find(c => c.ten === i.nguoiXin)) {
+      canh_bao.push({ ten: i.nguoiXin, so });
+    }
+  });
+
+  // Xung đột ca (2 đơn cùng ngày cùng ca)
+  const xungDot = [];
+  const allDon = window.rec.filter(i => {
+    const d = new Date(i.createdAt);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  // Lịch kíp tóm tắt
+  const lichTomTat = LICH_KIP ? Object.keys(LICH_KIP).reduce((acc, ten) => {
+    acc[ten] = LICH_KIP[ten].kip;
+    return acc;
+  }, {}) : {};
+
+  return `Bạn là trợ lý AI của hệ thống Quản lý Đổi Ca UTMC Đường hầm TP.HCM.
+Hệ thống 3 ca 4 kíp vận hành thiết bị:
+- Ca 1: 6h-14h | Ca 2: 14h-22h | Ca 3: 22h-6h
+- Mỗi kíp: 2 ngày Ca1 → 2 ngày Ca2 → 2 ngày Ca3 → nghỉ 2 ngày
+- Giới hạn đổi ca: ${GIOI_HAN_THANG} lần/người/tháng
+- Kíp VH thiết bị: Kíp 1 (Đặng Thái Nguyên, Phan Hoàng Thanh, Hồng Mạnh Thái, Bùi Văn Hùng, Đặng Ngọc Hòa, Nguyễn Thành Long, Trần Hải Dương, Ngụy Huỳnh Trung), Kíp 2 (Võ Tấn Nghĩa, Nguyễn Văn Hậu, Võ Văn Hoài, Nguyễn Quốc Thái, Phạm Bá Quỳnh, Trần Minh Tân, Nguyễn Hoài Nam, Hồ Trung Hiếu), Kíp 3 (Nguyễn Phương, Nguyễn Nhật Tiến, Đoàn Văn Hạnh, Nguyễn Minh Thảo, Dương Đại Nghĩa, Phan Quốc Nhật, Nguyễn Minh Trung, Nguyễn Thanh Thuận), Kíp 4 (Phạm Anh Tuấn, Võ Đông Đức, Huỳnh Hiếu Thịnh, Bùi Đình Khánh, Nguyễn Thành Tâm, Trần Quang Vinh, Nguyễn Huỳnh, Nguyễn Ngọc Duy)
+
+DỮ LIỆU HIỆN TẠI:
+- Tổng đơn đã lưu: ${window.rec.length}
+- Đơn tháng ${now.getMonth()+1}/${now.getFullYear()}: ${thangNay.length}
+- Top 5 người đổi ca nhiều nhất: ${topDoi.map(([t,s]) => `${t}(${s})`).join(', ')}
+- Thống kê theo tháng: ${Object.entries(byMonth).map(([k,v]) => `${k}:${v}đơn`).join(', ')}
+- Người đã hết lượt tháng này: ${canh_bao.length ? canh_bao.map(c => `${c.ten}(${c.so}/${GIOI_HAN_THANG})`).join(', ') : 'Không có'}
+- 10 đơn gần nhất: ${window.rec.slice(0,10).map(i => `${i.nguoiXin}→${i.nguoiDoi}(${new Date(i.createdAt).toLocaleDateString('vi-VN')})`).join('; ')}
+
+Trả lời bằng tiếng Việt, ngắn gọn, rõ ràng. Dùng emoji phù hợp. Định dạng đẹp.`;
+}
+
+function aiQuick(type) {
+  const prompts = {
+    'phan-tich': 'Phân tích xu hướng đổi ca: ai đổi nhiều nhất, tháng nào cao nhất, nhận xét tổng thể?',
+    'canh-bao': 'Phát hiện bất thường và cảnh báo: ai sắp hết lượt, có xung đột ca nào không, điều gì cần chú ý?',
+    'goi-y': 'Dựa vào lịch kíp và lịch sử, gợi ý cặp đổi ca phù hợp nhất hiện tại là ai với ai?',
+    'tom-tat': 'Tóm tắt tình hình đổi ca tháng này: số lượng, ai đổi, kíp nào nhiều nhất, nhận xét?'
+  };
+  document.getElementById('ai-input').value = prompts[type];
+  sendAI();
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+  btn.textContent = '...';
+  input.value = '';
+
+  // Thêm tin nhắn user
+  appendAIMsg('user', msg);
+
+  // Thêm typing indicator
+  const typingId = appendTyping();
+
+  // Build messages
+  AI_HISTORY.push({ role: 'user', content: msg });
+  if (AI_HISTORY.length > 10) AI_HISTORY.splice(0, 2);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: buildContext(),
+        messages: AI_HISTORY
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Xin lỗi, có lỗi xảy ra!';
+
+    removeTyping(typingId);
+    AI_HISTORY.push({ role: 'assistant', content: reply });
+    appendAIMsg('ai', reply);
+
+  } catch(e) {
+    removeTyping(typingId);
+    appendAIMsg('ai', '❌ Không kết nối được AI. Kiểm tra lại kết nối mạng.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'GỬI ➤';
+  input.focus();
+}
+
+function appendAIMsg(role, text) {
+  const chat = document.getElementById('ai-chat');
+  const div = document.createElement('div');
+  div.className = role === 'ai' ? 'ai-msg-ai' : 'ai-msg-user';
+
+  // Convert markdown-like to HTML
+  let html = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code style="background:rgba(0,180,255,.1);padding:1px 5px;border-radius:3px;font-size:.8em">$1</code>')
+    .replace(/^#{1,3}\s(.+)$/gm, '<div style="font-weight:700;color:#00b4ff;margin:4px 0">$1</div>')
+    .replace(/^[-•]\s(.+)$/gm, '<div style="padding-left:10px">• $1</div>')
+    .replace(/\n/g, '<br>');
+
+  div.innerHTML = `
+    <div class="ai-msg-icon">${role === 'ai' ? '🤖' : '👤'}</div>
+    <div class="ai-msg-text">${html}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function appendTyping() {
+  const chat = document.getElementById('ai-chat');
+  const id = 'typing-' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'ai-msg-ai';
+  div.innerHTML = `<div class="ai-msg-icon">🤖</div>
+    <div class="ai-msg-text">
+      <div class="ai-typing"><span></span><span></span><span></span></div>
+    </div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}

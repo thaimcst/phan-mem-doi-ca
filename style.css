@@ -159,27 +159,14 @@ body{
 .logo{display:flex;align-items:center;gap:14px}
 .logo-emblem{
   width:44px;height:44px;
-  border:1.5px solid rgba(0,180,255,0.5);
+  border:1.5px solid rgba(0,180,255,0.4);
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   position:relative;
-  background:rgba(0,60,120,0.4);
+  background:rgba(0,30,70,0.5);
+  flex-shrink:0;
+  overflow:hidden;
 }
-.logo-emblem::before{
-  content:'';position:absolute;inset:-4px;border-radius:50%;
-  border:1px solid rgba(0,180,255,0.2);
-  animation:emblem-spin 12s linear infinite;
-}
-.logo-emblem::after{
-  content:'';position:absolute;
-  width:6px;height:6px;border-radius:50%;
-  background:var(--accent);top:4px;left:50%;
-  transform:translateX(-50%);
-  box-shadow:0 0 8px var(--accent);
-  animation:emblem-spin 12s linear infinite;
-  transform-origin:0 16px;
-}
-@keyframes emblem-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .logo-emblem-inner{font-size:22px;z-index:1}
 .logo-info{}
 .logo-main{
@@ -642,4 +629,72 @@ tbody tr:hover td{background:rgba(0,80,160,0.08)}
   .sig-mid-name{display:block;margin-top:52px;font-weight:bold}
   .sig-row3{display:flex;justify-content:space-between;text-align:center}
   .sig-row3 .sig-box{flex:1;padding:0 6px;font-size:11pt}
+}
+
+/* ===== AI ASSISTANT ===== */
+.ai-quick-btn{
+  background:rgba(0,30,70,.6);color:#7ec8ff;
+  border:1px solid rgba(0,180,255,.2);
+  padding:5px 12px;border-radius:3px;
+  font-size:.72rem;font-weight:600;cursor:pointer;
+  font-family:'Be Vietnam Pro',sans-serif;
+  letter-spacing:.3px;transition:all .2s;
+}
+.ai-quick-btn:hover{background:rgba(0,60,130,.6);border-color:rgba(0,180,255,.5);}
+
+.ai-msg-ai,.ai-msg-user{
+  display:flex;gap:10px;align-items:flex-start;
+}
+.ai-msg-user{flex-direction:row-reverse;}
+
+.ai-msg-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,80,160,.4);border:1px solid rgba(0,180,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.ai-msg-user .ai-msg-icon{
+  background:rgba(0,60,30,.4);border-color:rgba(0,214,143,.3);
+}
+
+.ai-msg-text{
+  background:rgba(0,20,50,.5);border:1px solid rgba(0,180,255,.15);
+  border-radius:3px 10px 10px 10px;
+  padding:9px 13px;font-size:.82rem;color:var(--text);
+  line-height:1.6;max-width:85%;
+}
+.ai-msg-user .ai-msg-text{
+  background:rgba(0,60,30,.4);border-color:rgba(0,214,143,.15);
+  border-radius:10px 3px 10px 10px;color:#b0f0d8;
+}
+
+.ai-typing{
+  display:flex;gap:5px;align-items:center;padding:4px 0;
+}
+.ai-typing span{
+  width:7px;height:7px;border-radius:50%;
+  background:#00b4ff;opacity:.4;
+  animation:ai-dot 1.2s ease-in-out infinite;
+}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes ai-dot{
+  0%,80%,100%{opacity:.2;transform:scale(.8)}
+  40%{opacity:1;transform:scale(1.2)}
+}
+
+.ai-highlight{
+  background:rgba(0,180,255,.1);border:1px solid rgba(0,180,255,.2);
+  border-radius:4px;padding:6px 10px;margin:6px 0;
+  font-size:.78rem;color:#7ec8ff;
+}
+.ai-warn-box{
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);
+  border-radius:4px;padding:6px 10px;margin:4px 0;
+  font-size:.78rem;color:#fcd34d;
+}
+.ai-ok-box{
+  background:rgba(0,214,143,.08);border:1px solid rgba(0,214,143,.2);
+  border-radius:4px;padding:6px 10px;margin:4px 0;
+  font-size:.78rem;color:#6ee7b7;
 }
